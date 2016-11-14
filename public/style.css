@@ -51,9 +51,23 @@ body {
 }
 
 /* Google Map! */
-#map {
-    height: 645px;
-    width: 645px;
+/*#map {*/
+    /*height: 645px;*/
+    /*width: 645px;*/
+/*}*/
+
+@media screen and (min-width: 500px) {
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    #map {
+        height: 645px;
+        width: 100%;
+    }
 }
 
 .iframe-container{
