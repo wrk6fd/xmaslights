@@ -177,11 +177,11 @@ angular.module('gservice', [])
 
 
         // Refresh the page upon window load. Use the initial latitude and longitude
-        google.maps.event.addDomListener(window, 'load',
-            googleMapService.refresh(selectedLat, selectedLong));
-
-        google.maps.event.addDomListener(window, 'resize',
-            googleMapService.refresh(selectedLat, selectedLong));
+        // google.maps.event.addDomListener(window, 'load',
+        //     googleMapService.refresh(selectedLat, selectedLong));
+        //
+        // google.maps.event.addDomListener(window, 'resize',
+        //     googleMapService.refresh(selectedLat, selectedLong));
 
         return googleMapService;
     });
