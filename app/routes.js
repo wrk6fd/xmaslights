@@ -1,6 +1,10 @@
 // Dependencies
 var mongoose        = require('mongoose');
-var User            = require('./model.js');
+var House            = require('./model.js');
+//https://www.hacksparrow.com/the-mongodb-tutorial.html
+//http://mongoosejs.com/docs/2.7.x/docs/query.html
+//http://mongoosejs.com/docs/queries.html
+
 
 // Opens App Routes
 module.exports = function(app) {
@@ -11,7 +15,7 @@ module.exports = function(app) {
     app.get('/users', function(req, res){
 
         // Uses Mongoose schema to run the search (empty conditions)
-        var query = User.find({});
+        var query = House.find({});
         query.exec(function(err, users){
             if(err)
                 res.send(err);
@@ -24,13 +28,13 @@ module.exports = function(app) {
     // POST Routes
     // --------------------------------------------------------
     // Provides method for saving new users in the db
-    app.post('/users', function(req, res){
+    app.post('/houses', function(req, res){
 
-        // Creates a new User based on the Mongoose schema and the post bo.dy
-        var newuser = new User(req.body);
+        // Creates a new House based on the Mongoose schema and the post bo.dy
+        var newHouse = new House(req.body);
 
-        // New User is saved in the db.
-        newuser.save(function(err){
+        // New House is saved in the db.
+        newHouse.save(function(err){
             if(err)
                 res.send(err);
 
@@ -46,19 +50,18 @@ module.exports = function(app) {
         var lat             = req.body.latitude;
         var long            = req.body.longitude;
         var distance        = req.body.distance;
-        var male            = req.body.male;
-        var female          = req.body.female;
-        var other           = req.body.other;
-        var minAge          = req.body.minAge;
-        var maxAge          = req.body.maxAge;
-        var favLang         = req.body.favlang;
-        var reqVerified     = req.body.reqVerified;
+        var nickname        = req.body.nickname;
+        var address         = req.body.address;
+        var tags            = req.body.tags;
+        var rating          = req.body.rating;
+        var created_at      = req.body.created_at;
+        var updated_at      = req.body.updated_at;
 
         // Opens a generic Mongoose Query. Depending on the post body we will...
-        var query = User.find({});
+        var query = House.find({});
 
         // ...include filter by Max Distance (converting miles to meters)
-        if(distance){
+        if(distance && (lat && long)){
 
             // Using MongoDB's geospatial querying features. (Note how coordinates are set [long, lat]
             query = query.where('location').near({ center: {type: 'Point', coordinates: [long, lat]},
@@ -67,29 +70,35 @@ module.exports = function(app) {
                 maxDistance: distance * 1609.34, spherical: true});
         }
 
-        // ...include filter by Gender (all options)
-        if(male || female || other){
-            query.or([{ 'gender': male }, { 'gender': female }, {'gender': other}]);
+        // ...include filter by Nickname
+        if(nickname){
+            query = query.where('nickname').equals(nickname); // Regex?
         }
 
-        // ...include filter by Min Age
-        if(minAge){
-            query = query.where('age').gte(minAge);
+        // ...include filter by Address
+        if(address){
+            if(address.street) {
+                query = query.where('address.street').equals(address.street); // Regex?
+            }
+            if(address.city) {
+                query = query.where('address.city').equals(address.city); // Regex?
+            }
+            if(address.state) {
+                query = query.where('address.state').equals(address.state); // Regex?
+            }
+            if(address.zip) {
+                query = query.where('address.zip').equals(address.zip); // distance around zip?
+            }
         }
 
-        // ...include filter by Max Age
-        if(maxAge){
-            query = query.where('age').lte(maxAge);
+        // ...include filter by Tags
+        if(tags){
+            query = query.where('tags').in(tags); // Regex
         }
 
-        // ...include filter by Favorite Language
-        if(favLang){
-            query = query.where('favlang').equals(favLang);
-        }
-
-        // ...include filter for HTML5 Verified Locations
-        if(reqVerified){
-            query = query.where('htmlverified').equals("Yep (Thanks for giving us real data!)");
+        // ...include filter by ratings
+        if(rating){
+            query = query.where('comments.ratings').equals(rating);
         }
 
         // Execute Query and Return the Query Results
