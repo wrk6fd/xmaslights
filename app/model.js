@@ -41,11 +41,15 @@ var HouseSchema = new Schema({
         zip: {type: String, required: false}
     },
     location: {type: [Number], required: false}, // [Long, Lat]
-    comments: {type: [String], required: false},
+    comments: [{
+        id: {type: Number, required: false},
+        text: {type: [String], required: false},
+        time: {type: Date, default: new Date()}
+    }],
     ratings: {type: [Number], required: false},
     tags: {type: [String], required: false},
-    created_at: {type: Date, default: Date.now},
-    updated_at: {type: Date, default: Date.now}
+    created_at: {type: Date, default: new Date()},
+    updated_at: {type: Date, default: new Date()}
 });
 
 // Sets the created_at parameter equal to the current time
