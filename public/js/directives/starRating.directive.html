@@ -1,0 +1,9 @@
+<div style="display: inline-block; margin: 0 3px; padding: 0; cursor:pointer;" ng-repeat="idx in maxRatings track by $index">
+    <div class="snowflake-rating"
+         ng-class="{'dull-beige': ((hoverValue + _rating) <= $index), 'light-blue': ((hoverValue + _rating) > $index)}"
+         ng-Click="isolatedClick($index + 1)"
+         ng-mouseenter="isolatedMouseHover($index + 1)"
+         ng-mouseleave="isolatedMouseLeave($index + 1)">
+        <i class="fa fa-snowflake-o" aria-hidden="true"></i>
+    </div>
+</div>

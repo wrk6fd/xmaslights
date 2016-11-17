@@ -19,8 +19,8 @@ html {
 /* Space out content a bit */
 body {
     /*https://abidanshah.com/2014/12/23/christmas-lights-in-a-minute/*/
-    background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url(/img/snowflakes-paper-background-silver.jpg);
-    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url(/img/snowflakes-paper-background-silver.jpg);
+    background-image: -webkit-linear-gradient(rgba(221, 221, 194, 0.7), rgba(221, 221, 194, 0.7)), url(/img/snowflakes-paper-background-silver.jpg);
+    background-image: linear-gradient(rgba(221, 221, 194, 0.7), rgba(221, 221, 194, 0.7)), url(/img/snowflakes-paper-background-silver.jpg);
 
     background-size: auto;
     background-position: center;
@@ -97,31 +97,6 @@ body {
 
 }
 
-
-/** {*/
-    /*padding: 0;*/
-    /*margin: 0;*/
-    /*box-sizing: border-box;*/
-    /*font-family: 'Sanchez', serif;*/
-/*}*/
-
-/*html {*/
-    /*overflow-y: scroll;*/
-/*}*/
-
-/*body {*/
-    /*!*https://abidanshah.com/2014/12/23/christmas-lights-in-a-minute!*/*/
-    /*background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(../img/white-snow-background.jpg);*/
-    /*background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(../img/white-snow-background.jpg);*/
-
-    /*background-size: cover;*/
-    /*background-position: center;*/
-    /*color: white;*/
-    /*font-size: 18px;*/
-    /*height: 100vh;*/
-    /*padding-top: 50px;*/
-/*}*/
-
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
 .row {
@@ -129,16 +104,27 @@ body {
 }
 
 .red {
-    color: #f22e3e;
+    color: #A80030;
 }
 .green {
-    color: #1c903c;
+    color: #93B849;
+}
+.beige {
+    color: #DDDDC2;
+}
+.dull-beige {
+    color: rgba(228, 241, 241, 0.55);
+}
+.light-blue {
+    color: #63dddd;
+    text-shadow: 1px 1px 5px rgba(10, 0, 241, 0.63);
 }
 
 .box {
-    background-color: white;
-    border: 6px solid white;
+    background-color: #DDDDC2;
+    border: 2px solid #DDDDC2;
     border-radius: 3px;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -151,51 +137,19 @@ body {
 .box-header {
     align-items: center;
     border-radius: 3px;
-    background-color: rgb(106, 183, 125);
+    background-color: #d24a39;
     display: flex;
     justify-content: flex-end;
     margin: 6px auto;
     height: 48px;
     width: 95%;
 }
-
-.rating input[type=radio] {
-    /*    margin: 0;*/
-}
-.rating {
-    overflow: hidden;
-    display: inline-block;
+.snowflake-rating {
     font-size: 32px;
-    margin-right: 24px;
-    position: relative;
+    height: 36px;
+    width: 36px;
+    transition: all 350ms;
 }
-.rating-input {
-    float: right;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    margin: 0 0 0 -32px !important;
-    opacity: 0;
-}
-.rating label {
-    color: aliceblue;
-}
-.rating:hover .icon-ac_unit:hover,
-.rating:hover .icon-ac_unit:hover ~ .icon-ac_unit,
-.rating-input:checked ~ .icon-ac_unit {
-    background-position: 0 0;
-    color: #F43425
-}
-
-.icon-ac_unit,
-.rating:hover .icon-ac_unit {
-    position: relative;
-    float: right;
-    display: block;
-    width: 32px;
-    height: 32px;
-}
-
 /**************BODY**************/
 .box-body {
     text-align: center;
@@ -207,17 +161,25 @@ body {
     width: 95%;
     height: auto;
 }
+
+.carousel-inner .item img {
+    display: inline;
+}
+.carousel-control.right, .carousel-control.left {
+    background: none;
+}
 /**************FOOTER**************/
 .box-footer {
     align-items: center;
-    background-color: #F43425;
+    background-color: #93B849;
+    /*background-color: rgb(106, 183, 125);*/
     /*    border: 6px solid white;*/
     border-radius: 2px;
-    color: aliceblue;
+    color: #50362A;
     flex-direction: row;
     display: flex;
     height:84px;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin: 6px auto;
     padding: 24px;
     width: 95%;
@@ -227,6 +189,24 @@ body {
     flex-direction: column;
     text-align: right;
 }
+button.no-btn {
+    background: none;
+    outline: none;
+    border: none;
+    font-size: 48px;
+    margin: 0 18px;
+}
+
+button.no-btn:active {
+    transform: translateY(2px);
+}
+
+.address-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .box-footer .address .street {
     font-size: 24px;
 }

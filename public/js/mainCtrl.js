@@ -4,10 +4,40 @@ mainCtrl.controller('mainCtrl', function($scope, $http, $rootScope, geolocation,
 
     // Initializes Variables
     // ----------------------------------------------------------------------------
+    $scope.houses = [
+        {
+            nickname: 'Santa\'s Funhouse',
+            pictures: ['img/christmas-house-1.jpg', 'img/christmas-lights.jpg']
+            address: {
+                street: '13548 Gray Bill Court',
+                city: 'Clifton',
+                state: 'VA',
+                zip: '20124'
+            }
+        }
+    ];
+
+
     $scope.formData = {};
     var coords = {};
     var lat = 0;
     var long = 0;
+
+    $scope.starRating1 = 4;
+
+    // $scope.click1 = function (param) {
+    //     console.log('Click(' + param + ')');
+    // };
+    //
+    // $scope.mouseHover1 = function (param) {
+    //     console.log('mouseHover(' + param + ')');
+    //     $scope.hoverRating1 = param;
+    // };
+    //
+    // $scope.mouseLeave1 = function (param) {
+    //     console.log('mouseLeave(' + param + ')');
+    //     $scope.hoverRating1 = param + '*';
+    // };
 
     // Set initial coordinates to the center of the US
     $scope.formData.latitude = 39.500;
