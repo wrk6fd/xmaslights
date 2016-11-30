@@ -13,9 +13,11 @@ var localStrategy = require('passport-local' ).Strategy;
 // Express Configuration
 // -----------------------------------------------------
 // Sets the connection to MongoDB
-mongoose.connect("mongodb://admin:password@ds041586.mlab.com:41586/karras-app");
+// mongoose.connect("mongodb://admin:password@ds041586.mlab.com:41586/karras-app");
+mongoose.connect("mongodb://127.0.0.1/karras-app");
 
 var User = require('./app/user.js');
+var House = require('./app/house.js');
 
 // Logging and Parsing
 app.use(express.static(__dirname + '/public'));                 // sets the static files location to public

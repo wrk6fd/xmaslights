@@ -1,7 +1,7 @@
 // Dependencies
 var mongoose        = require('mongoose');
-var House            = require('./house.js');
-var User            = require('./user.js');
+var House            = require('./house');
+var User            = require('./user');
 var passport        = require('passport');
 //https://www.hacksparrow.com/the-mongodb-tutorial.html
 //http://mongoosejs.com/docs/2.7.x/docs/query.html
@@ -15,15 +15,18 @@ module.exports = function(app) {
     // --------------------------------------------------------
     // Retrieve records for all users in the db
     app.get('/houses', function(req, res){
-        console.log(req.query);
+        // console.log(req.query);
 
         // Uses Mongoose schema to run the search (empty conditions)
         var query = House.find({});
+        console.log('connecting to mongodb');
         query.exec(function(err, houses){
+            console.log('still connecting...');
             if(err) {
                 console.log(err);
                 res.send(err);
             }
+            console.log(houses);
             // If no errors are found, it responds with a JSON of all users
             res.json(houses);
         });
@@ -36,14 +39,17 @@ module.exports = function(app) {
 
         // Creates a new House based on the Mongoose schema and the post body
         var newHouse = new House(req.body);
+        console.log(newHouse);
 
         // New House is saved in the db.
         newHouse.save(function(err,house){
-            if(err)
+            if(err) {
+                console.log(err);
                 res.send(err);
+            }
 
             // If no errors are found, it responds with a JSON of the new user
-            console.log(house);
+            console.log('new house',house);
             res.json(house);
         });
     });
@@ -55,8 +61,8 @@ module.exports = function(app) {
         var obj = updatedHouse.toObject();
         delete updatedHouse._id;
 
-        console.log(obj);
-        console.log(house_id);
+        // console.log(obj);
+        // console.log(house_id);
 
         var query = House.update(house_id, obj, function(err, house) {
             if(err)

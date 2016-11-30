@@ -134,22 +134,26 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         // call login from service
         AuthService.login($scope.loginForm.username, $scope.loginForm.password)
         // handle success
-            .then(function () {
+            .then(function (data) {
                 $scope.cancelLogin();
-                AuthService.getUserStatus()
-                    .success(function (data) {
-                        if(data.status){
-                            console.log(data);
-                            // user = true;
-                        } else {
-                            console.log(data);
-                            // user = false;
-                        }
-                    })
-                    // handle error
-                    .error(function (data) {
-                        user = false;
-                    });
+                console.log(data);
+                // AuthService.getUserStatus()
+                //     .success(function (data) {
+                //         console.log(data);
+                //         if(data.status){
+                //             console.log(data);
+                //             // user = true;
+                //             user = data.user;
+                //             console.log(user);
+                //         } else {
+                //             console.log('no-status',data);
+                //             user = false;
+                //         }
+                //     })
+                //     // handle error
+                //     .error(function (data) {
+                //         user = false;
+                //     });
             })
             // handle error
             .catch(function () {
@@ -161,20 +165,20 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.cancelLogin = function() {
         $scope.loginForm = {};
         $scope.loginIsOpen = false;
+        AuthService.getUserStatus()
+            .then(function(){
+                if (!AuthService.isLoggedIn()){
+                    console.log('not logged in');
+                } else {
+                    console.log('logged in');
+                }
+            });
     };
 
 
     $scope.toggleCollapse = function(){
         $scope.newHouseCollapse = !$scope.newHouseCollapse;
         if(!$scope.newHouseCollapse) focus('new-street-input');
-    };
-
-    $scope.getAverage = function(arr) {
-        var sum = 0;
-        for(var i = 0; i < arr.length; i++) {
-            sum += parseInt(arr[i]);
-        }
-        return sum / arr.length;
     };
 
     $scope.addRating = function(house_id,rating) {
@@ -231,7 +235,10 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.addHouse = function() {
         if($scope.file) {
             var uniqueFileName = $scope.uniqueString() + '-' + $scope.file.name;
-            if(!$scope.newHouse.ratings.length) $scope.newHouse.ratings.push($scope.newHouseRating);
+            if(!$scope.newHouse.ratings) {
+                $scope.newHouse.ratings = [];
+                $scope.newHouse.ratings.push($scope.newHouseRating);
+            }
             $scope.newHouse.pictures = [];
             $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
             console.log('uploading',$scope.newHouse);
@@ -239,7 +246,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                 .success(function(data) {
                     console.log('added',data);
                     $scope.upload(uniqueFileName, data._id);
-
 
                     setTimeout(function() {
                         $scope.houses.push(data);
@@ -331,7 +337,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
             gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(address){
                 $scope.newHouse.address = address;
-                // console.log($scope.newHouse);
+                console.log($scope.newHouse);
             });
 
         });

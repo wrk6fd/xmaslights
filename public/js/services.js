@@ -27,7 +27,7 @@ angular.module('AuthService', [])
                         if(status === 200 && data.status){
                             console.log(data);
                             user = true;
-                            deferred.resolve();
+                            deferred.resolve({user: username});
                         } else {
                             user = false;
                             deferred.reject();
