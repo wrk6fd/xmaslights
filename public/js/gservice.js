@@ -1,6 +1,6 @@
 // Creates the gservice factory. This will be the primary means by which we interact with Google Maps
 angular.module('gservice', [])
-    .factory('gservice', function($rootScope, $http){
+    .factory('gservice', function($rootScope, $http, $q){
 
         // Initialize Variables
         // -------------------------------------------------------------
@@ -172,6 +172,41 @@ angular.module('gservice', [])
                 googleMapService.clickLat = marker.getPosition().lat();
                 googleMapService.clickLong = marker.getPosition().lng();
                 $rootScope.$broadcast("clicked");
+            });
+        };
+
+        googleMapService.fGeocode = function(address, callback) {
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode( { "address": address }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK && results.length > 0) {
+                    var location = results[0].geometry.location,
+                        lat      = location.lat(),
+                        lng      = location.lng();
+
+                    return callback(location.lng(), location.lat()); // Long, Lat
+
+                }
+            });
+        };
+        googleMapService.rGeocode = function(latitude, longitude, callback) {
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(latitude, longitude);
+            geocoder.geocode( { "latLng": latlng }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK && results.length > 0) {
+                    if(results[0].formatted_address.split(', ')[2]) {
+                        var location = results[0].formatted_address.split(', '),
+                            street = location[0],
+                            city = location[1],
+                            state = location[2].split(' ')[0],
+                            zip = location[2].split(' ')[1];
+                        return callback({
+                            street: street,
+                            city: city,
+                            state: state,
+                            zip: zip
+                        });
+                    }
+                }
             });
         };
 

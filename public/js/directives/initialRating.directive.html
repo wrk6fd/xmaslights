@@ -1,0 +1,9 @@
+<div style="display: inline-block; margin: 0 3px; padding: 0; cursor:pointer;" ng-repeat="idx in snowMaxRatings track by $index">
+    <div class="snowflake-rating"
+         ng-class="{'dull-beige': ((hoverValue + _snowRating) <= $index + 0.9), 'light-blue': ((hoverValue + _snowRating) > $index + 0.9)}"
+         ng-Click="isolatedClick($index + 1)"
+         ng-mouseenter="isolatedMouseHover($index + 1)"
+         ng-mouseleave="isolatedMouseLeave($index + 1)" title="{{$index + 1}} Snowflakes">
+        <i class="fa fa-snowflake-o" aria-hidden="true"></i>
+    </div>
+</div>

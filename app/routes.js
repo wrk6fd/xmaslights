@@ -1,6 +1,8 @@
 // Dependencies
 var mongoose        = require('mongoose');
-var House            = require('./model.js');
+var House            = require('./house.js');
+var User            = require('./user.js');
+var passport        = require('passport');
 //https://www.hacksparrow.com/the-mongodb-tutorial.html
 //http://mongoosejs.com/docs/2.7.x/docs/query.html
 //http://mongoosejs.com/docs/queries.html
@@ -12,16 +14,18 @@ module.exports = function(app) {
     // GET Routes
     // --------------------------------------------------------
     // Retrieve records for all users in the db
-    app.get('/users', function(req, res){
+    app.get('/houses', function(req, res){
+        console.log(req.query);
 
         // Uses Mongoose schema to run the search (empty conditions)
         var query = House.find({});
-        query.exec(function(err, users){
-            if(err)
+        query.exec(function(err, houses){
+            if(err) {
+                console.log(err);
                 res.send(err);
-
+            }
             // If no errors are found, it responds with a JSON of all users
-            res.json(users);
+            res.json(houses);
         });
     });
 
@@ -30,16 +34,102 @@ module.exports = function(app) {
     // Provides method for saving new users in the db
     app.post('/houses', function(req, res){
 
-        // Creates a new House based on the Mongoose schema and the post bo.dy
+        // Creates a new House based on the Mongoose schema and the post body
         var newHouse = new House(req.body);
 
         // New House is saved in the db.
-        newHouse.save(function(err){
+        newHouse.save(function(err,house){
             if(err)
                 res.send(err);
 
             // If no errors are found, it responds with a JSON of the new user
-            res.json(req.body);
+            console.log(house);
+            res.json(house);
+        });
+    });
+
+    app.put('/houses', function(req, res){
+        var updatedHouse = new House(req.body),
+            house_id = updatedHouse._id;
+
+        var obj = updatedHouse.toObject();
+        delete updatedHouse._id;
+
+        console.log(obj);
+        console.log(house_id);
+
+        var query = House.update(house_id, obj, function(err, house) {
+            if(err)
+                res.send(err);
+
+            console.log(house);
+            res.json(house);
+        })
+    });
+
+    app.put('/rate', function(req, res) {
+
+    });
+
+    app.post('/register', function(req, res) {
+        User.register(new User({ username: req.body.username }),
+            req.body.password, function(err, account) {
+                if (err) {
+                    return res.status(500).json({
+                        err: err
+                    });
+                }
+                passport.authenticate('local')(req, res, function () {
+                    return res.status(200).json({
+                        status: 'Registration successful!'
+                    });
+                });
+            });
+    });
+
+    app.post('/login', function(req, res, next) {
+        passport.authenticate('local', function(err, user, info) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return res.status(401).json({
+                    err: info
+                });
+            }
+            req.logIn(user, function(err) {
+                if (err) {
+                    return res.status(500).json({
+                        err: 'Could not log in user'
+                    });
+                }
+                var retUser = user;
+                retUser.hash = '';
+                retUser.salt = '';
+                res.status(200).json({
+                    user: retUser,
+                    status: 'Login successful!'
+                });
+            });
+        })(req, res, next);
+    });
+
+    app.get('/logout', function(req, res) {
+        req.logout();
+        res.status(200).json({
+            status: 'Bye!'
+        });
+    });
+
+    app.get('/user/status', function(req, res) {
+        if (!req.isAuthenticated()) {
+            console.log(req);
+            return res.status(200).json({
+                status: false
+            });
+        }
+        res.status(200).json({
+            status: true
         });
     });
 
@@ -110,4 +200,6 @@ module.exports = function(app) {
             res.json(users);
         });
     });
+
+    app.post('/picUpload')
 };

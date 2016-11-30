@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css?family=Sanchez" rel="stylesheet">
+    <!--<link rel="stylesheet" href="../node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css">-->
     <!-- Holder JS -->
     <script src="../bower_components/holderjs/holder.js"></script>
     <!-- Google Maps API -->
@@ -18,57 +19,154 @@
     <!-- Modernizr -->
     <script src="../bower_components/modernizr/bin/modernizr"></script>
     <!-- JS Source -->
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular/angular-animate.min.js"></script>
+    <script src="../node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+    <!--<script src="../bower_components/jquery/dist/jquery.min.js"></script>-->
     <script src="../bower_components/angular-route/angular-route.js"></script>
-    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!--<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>-->
     <script src="../bower_components/angularjs-geolocation/dist/angularjs-geolocation.min.js"></script>
-    <!-- Angular Scripts -->
+    <script src="../node_modules/aws-sdk/dist/aws-sdk.min.js"></script>
+    <script src="../node_modules/lodash/lodash.min.js"></script>
+    <script src="../node_modules/headroom.js/dist/headroom.min.js"></script>
+    <script src="../node_modules/headroom.js/dist/angular.headroom.min.js"></script>
+    <script src="../bower_components/angular-bootstrap-file-field/src/angular-bootstrap-file-field.js"></script>
+    <script src="../bower_components/angular-reverse-geocode/angular-reverse-geocode.js"></script>
+    <!--<script src="../node_modules/ng-file-upload/dist/ng-file-upload-shim.min.js"></script>-->
+    <!--<script src="../node_modules/ng-file-upload/dist/ng-file-upload.min.js"></script>-->
+    <!--<script src="../bower_components/angular-strap/dist/angular-strap.min.js"></script>-->
+    <!--<script src="../bower_components/angular-strap/dist/angular-strap.tpl.min.js"></script>-->
+     <!--Angular Scripts -->
     <script src="js/app.js"></script>
     <script src="js/mainCtrl.js"></script>
     <script src="js/addCtrl.js"></script>
     <script src="js/queryCtrl.js"></script>
     <script src="js/gservice.js"></script>
+    <script src="js/services.js"></script>
     <script src="js/directives/starRating.directive.js"></script>
 </head>
+
 <body ng-controller="mainCtrl">
+<header headroom>
+    <nav class="navbar navbar-fixed-top">
+        <div>{{user.username}}</div>
+        <button id="newHouseBtn" class="red-bg xbtn" ng-click="toggleCollapse(true)">New House</button>
+        <!--<button class="red-bg xbtn" ng-click="register()">Register</button>-->
+        <!--<button class="red-bg xbtn">Set My Location</button>-->
+        <button uib-popover-template="registrationPopover.templateUrl" popover-title="Register an Account"
+                popover-placement="bottom-right" popover-is-open="registerIsOpen"
+                type="button" class="red-bg xbtn">Register</button>
+
+        <script type="text/ng-template" id="registration.html">
+            <div class="col-md-12 popover-background">
+                <p>Make an account to add houses and comment on your favorite houses</p>
+                <div ng-show="error.register" class="alert alert-danger">{{error.register}}</div>
+                <hr>
+                <div class="registration-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="username" ng-model="registerForm.username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password" ng-model="registerForm.password" required>
+                    </div>
+                    <div class="popover-buttons">
+                        <button ng-click="register()" class="blue-bg xbtn" ng-disabled="!registerForm.username || !registerForm.password">Register</button>
+                        <button ng-click="cancelRegistration()" class="blue-bg xbtn" >Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+        <button uib-popover-template="loginPopover.templateUrl" popover-title="Login to your account"
+                popover-placement="bottom-right" popover-is-open="loginIsOpen"
+                type="button" class="blue-bg xbtn">Login</button>
+
+        <script type="text/ng-template" id="login.html">
+            <div class="col-md-12 popover-background">
+                <div ng-show="error.login" class="alert alert-danger">{{error.login}}</div>
+                <div class="registration-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="username" ng-model="loginForm.username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password" ng-model="loginForm.password" required>
+                    </div>
+                    <div class="popover-buttons">
+                        <button ng-click="login()" class="blue-bg xbtn" ng-disabled="!loginForm.username || !loginForm.password">Login</button>
+                        <button ng-click="cancelLogin()" class="blue-bg xbtn" >Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+    </nav>
+</header>
+
 <div class="container">
-    <!--<div class="header">-->
-        <!--<ul class="nav nav-pills pull-right">-->
-            <!--<div><a href="/#/join">Join the Team</a></div>-->
-            <!--<div><a href="/#/find">Find Teammates</a></div>-->
-        <!--</ul>-->
-        <!--<h3 class="text-muted">The Scotch MEAN MapApp</h3>-->
-    <!--</div>-->
-    <div class="box" ng-repeat="house in houses"><!-- repeat for each house in db-->
+    <div class="collapse" uib-collapse="newHouseCollapse" id="newHouse">
+        <div class="box">
+            <div class="box-header">
+
+            </div>
+            <div class="box-body-new">
+                <div class="col-md-6 add-picture">
+                    <div class="new-house-upload">
+                        <p ng-show="error.file">{{error.file}}</p>
+                        <file-field class="blue-bg xbtn" ng-show="!file" ng-model="file" preview="previewImage">Select File</file-field>
+                        <p ng-show="file">Preview (click picture to cancel): </p>
+                        <img ng-show="file" ng-src="{{previewImage}}" ng-click="file=null; previewImage=' ';">
+                    </div>
+                </div>
+                <div class="col-md-6 new-address-form">
+                        <div class="form-group col-md-12">
+                            <label for="new-street-input">Street</label>
+                            <input class="form-control" id="new-street-input"  type="text" ng-model="newHouse.address.street">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="city-input">City</label>
+                            <input class="form-control" id="city-input"  type="text" ng-model="newHouse.address.city">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="state-input">State</label>
+                            <input class="form-control" id="state-input"  type="text" ng-model="newHouse.address.state">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="zip-input">Zip Code</label>
+                            <input class="form-control" id="zip-input"  type="text" ng-model="newHouse.address.zip">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>Rating</label>
+                            <div style="margin-top: -5px;" initial-rating snow-rating="newHouseRating" read-only="false" snow-max-rating="5"
+                                 click="setRating(param)" mouse-hover="setValue(param)" uib-tooltip="{{value}} Snowflakes">
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="box-footer new-house">
+                <button class="red-bg xbtn" ng-click="addHouse()">Add House</button>
+                <button class="red-bg xbtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="box" ng-repeat="house in houses track by $index"><!-- repeat for each house in db-->
         <div class="box-header">
-            <div style="margin-top: -5px;" star-rating rating="starRating1" read-only="false" max-rating="5" click="click1(param)"
-                 mouse-hover="mouseHover1(param)" mouse-leave="mouseLeave1(param)">
+            <div style="margin-top: -5px;" house-rating rating="house.avgRating" read-only="false" max-rating="5" click="addRating(house._id,param)"
+                 uib-tooltip="{{ratingMsg[$index]}}">
             </div>
         </div>
         <div class="box-body">
-            <div id="carousel-house-{{house.id}}" class="carousel slide" data-interval="false" data-ride="carousel">
-                <div class="carousel-inner" role="listbox">
-                    <div class="item" ng-class="{active: $index === 0}" ng-repeat="pic in house.pictures track by $index">
-                        <img src="{{pic}}" alt="{{house.address.street}}">
-                    </div>
-                    <!--<div class="item">-->
-                        <!--<img src="img/christmas-lights.jpg" alt="123 Main St">-->
-                    <!--</div>-->
+            <div uib-carousel active="0" no-wrap="false">
+                <div uib-slide ng-repeat="pic in house.pictures track by $index" index="$index">
+                    <img ng-src="{{pic}}" style="margin:auto;">
+                    <div class="carousel-caption"></div>
                 </div>
-                <a class="left carousel-control" ng-href="#carousel-house-{{house.id}}" role="button" data-slide="prev">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="right carousel-control" ng-href="#carousel-house-{{house.id}}" role="button" data-slide="next">
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
             </div>
         </div>
         <div class="box-footer">
             <div class="show-comments">
-                <button class="no-btn"><i class="fa fa-comment" aria-hidden="true"></i></button>
+                <button class="no-btn" ng-click="toggleComment()"><i class="fa fa-comment" aria-hidden="true"></i></button>
             </div>
             <div class="address-container">
                 <button class="no-btn"><i class="fa fa-location-arrow" aria-hidden="true"></i></button>
@@ -77,9 +175,20 @@
                         {{house.address.street}}
                     </div>
                     <div class="city-state-zip">
-                        Clifton, VA 20124
                         {{house.address.city}}, {{house.address.state}} {{house.address.zip}}
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="collapse" uib-collapse="commentCollapse" id="commentBox">
+            <div class="comment-box">
+                <input id="comment-user" placeholder="What is your name?" class="comment-user" ng-model="comment.user" type="text">
+                <hr>
+                <textarea name="comment-body" placeholder="Write a comment" id="comment-body" class="comment-body" ng-model="comment.text"
+                          cols="30" rows="5"></textarea>
+                <div class="save-comment">
+                    <button class="red-bg xbtn">Save Comment</button>
+                    <button class="red-bg xbtn">Cancel</button>
                 </div>
             </div>
         </div>

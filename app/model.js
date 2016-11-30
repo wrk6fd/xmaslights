@@ -29,11 +29,33 @@ var Schema      = mongoose.Schema;
 //
 // // Exports the UserSchema for use elsewhere. Sets the MongoDB collection to be used as: "scotch-users"
 // module.exports = mongoose.model('scotch-user', UserSchema);
-
+//
+// var userSchema = new mongoose.Schema({
+//     username: {
+//         type: String,
+//         unique: true,
+//         required: true
+//     },
+//     password: {
+//         type: String,
+//         required: true
+//     },
+//     address: {
+//         street: {type: String, required: false},
+//         city: {type: String, required: false},
+//         state: {type: String, required: false},
+//         zip: {type: String, required: false}
+//     },
+//     location: {type: [Number], required: false} // [Long, Lat]
+// });
+//
+//
+// module.exports = mongoose.model('User', userSchema);
 
 var HouseSchema = new Schema({
-    nickname: {type:[String], required: true},
-    pictures: {type:[String], required: true},
+    _id: {type: String, required: false},
+    nickname: {type:[String], required: false},
+    pictures: {type:[String], required: false},
     address: {
         street: {type: String, required: false},
         city: {type: String, required: false},
@@ -44,9 +66,11 @@ var HouseSchema = new Schema({
     comments: [{
         id: {type: Number, required: false},
         text: {type: [String], required: false},
+        user: {type: [String], required: false},
         time: {type: Date, default: new Date()}
     }],
     ratings: {type: [Number], required: false},
+    avgRating: {type: Number, required: false},
     tags: {type: [String], required: false},
     created_at: {type: Date, default: new Date()},
     updated_at: {type: Date, default: new Date()}

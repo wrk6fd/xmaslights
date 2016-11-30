@@ -5,11 +5,14 @@
     padding: 0.2em 0;
 }
 
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     font-family: 'Sanchez', serif;
+    letter-spacing: 0.09em;
 }
 
 html {
@@ -106,6 +109,9 @@ body {
 .red {
     color: #A80030;
 }
+.red-bg {
+    background-color: #A80030;
+}
 .green {
     color: #93B849;
 }
@@ -118,6 +124,47 @@ body {
 .light-blue {
     color: #63dddd;
     text-shadow: 1px 1px 5px rgba(10, 0, 241, 0.63);
+}
+
+.popover {
+    background-color: rgb(74, 167, 167);
+    color: #efefd4;
+}
+.popover-title {
+    background-color: rgb(55, 112, 112);
+}
+
+.arrow:after {
+    border-bottom-color: rgb(55, 112, 112);
+}
+
+.popover-buttons {
+    display: flex;
+
+    padding: 12px 0;
+}
+
+
+.blue-bg {
+    background-color: rgba(10, 0, 241, 0.63);
+    /*background-color: #63dddd;*/
+    /*text-shadow: 1px 1px 5px rgba(10, 0, 241, 0.63);*/
+}
+
+.xbtn {
+    /*background-color: #A80030;*/
+    color: #DDDDC2;
+    outline: none;
+    border: 4px solid #DDDDC2;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 0 12px 0 12px;
+    padding: 6px;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+
+.xbtn:active {
+    box-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.25);
 }
 
 .box {
@@ -133,11 +180,48 @@ body {
     width: 75%;
 }
 
+.container {
+    margin-top: 48px;
+}
+/**************NAV*****************/
+header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 110px;
+    z-index: 9999;
+}
+
+.headroom {
+    will-change: transform;
+    transition: transform 0.3s linear;
+}
+.headroom--pinned {
+    transform: translateY(0%);
+}
+.headroom--unpinned {
+    transform: translateY(-100%);
+}
+
+nav {
+    background-color: #4AA7A7;
+    background-image: -webkit-linear-gradient(rgba(74, 167, 167, 0.7), rgba(74, 167, 167, 0.7)), url(img/small_christmas_trees.png);
+    background-image: linear-gradient(rgba(74, 167, 167, 0.7), rgba(74, 167, 167, 0.7)), url(img/small_christmas_trees.png);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
 /**************HEADER**************/
 .box-header {
     align-items: center;
     border-radius: 3px;
-    background-color: #d24a39;
+    background-color: #A80030;
+    background-image: -webkit-linear-gradient(rgba(168, 0, 48, 0.7), rgba(168, 0, 48, 0.7)), url(img/small_christmas_trees.png);
+    background-image: linear-gradient(rgba(168, 0, 48, 0.7), rgba(168, 0, 48, 0.7)), url(img/small_christmas_trees.png);
     display: flex;
     justify-content: flex-end;
     margin: 6px auto;
@@ -152,21 +236,72 @@ body {
 }
 /**************BODY**************/
 .box-body {
+    background-color: rgba(30, 70, 70, 0.6);
+    margin: 0 auto;
     text-align: center;
+    height: 483px; /* set based on screen size */
+    line-height: 483px; /* set based on screen size */
+    width: 95%;
+    overflow: hidden;
+}
+
+.box-body-new {
+    background-color: rgba(30, 70, 70, 0.6);
+    margin: 0 auto;
+    /*height: auto; !* set based on screen size *!*/
+    width: 95%;
+    overflow: hidden;
+    display: flex;
+}
+
+.box-body-new .new-address-form {
+    padding: 24px 0;
+}
+
+.new-house-upload img{
+    height: 75%;
+    width: 75%;
 }
 
 .box-body img {
     overflow: hidden;
     border-radius:3px;
-    width: 95%;
+    width: 100%;
     height: auto;
 }
 
-.carousel-inner .item img {
-    display: inline;
+.new-address-form .address-container {
+    justify-content: center;
+    height: 300px;
 }
+
+.new-address-form .address {
+    text-align: right;
+}
+.change {
+    margin-top: 24px;
+}
+
+.carousel-inner .item img {
+    height: 483px;
+    width: auto;
+    overflow: hidden;
+}
+.carousel-indicators {
+    display: none;
+}
+
+
+
 .carousel-control.right, .carousel-control.left {
     background: none;
+}
+
+.add-picture {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 /**************FOOTER**************/
 .box-footer {
@@ -184,6 +319,13 @@ body {
     padding: 24px;
     width: 95%;
 }
+
+.box-footer.new-house {
+    padding: 12px;
+    padding-right: 0;
+    justify-content: flex-end;
+}
+
 .box-footer .address {
     display: flex;
     flex-direction: column;
@@ -212,4 +354,43 @@ button.no-btn:active {
 }
 .box-footer .address .city-state-zip {
     font-size: 18px;
+}
+
+.comment-box {
+    border-radius: 2px;
+    color: #50362A;
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    margin: 6px auto;
+    padding: 6px;
+    width: 95%;
+}
+
+.comment-box hr {
+    width: 95%;
+    margin: -2.5px auto;
+    border-color: #DDDDC2;
+    border-width: 5px;
+    z-index: 100;
+}
+
+.save-comment {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px;
+}
+
+.comment-user {
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    border: none;
+    padding: 12px;
+}
+
+.comment-body {
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border: none;
+    padding: 12px;
 }
