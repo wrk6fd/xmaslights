@@ -120,7 +120,8 @@
         </div>
         <div class="box-footer">
             <div class="show-comments">
-                <button class="no-btn" ng-click="toggleComment()"><i class="fa fa-comment" aria-hidden="true"></i></button>
+                <!--<button class="no-btn" ng-click="toggleComment(house)"><i class="fa fa-comment" aria-hidden="true"></i></button>-->
+                <button ng-show="house.comments.length || isLoggedIn" class="no-btn" ng-click="toggleComment(house)"><i class="fa fa-comment" aria-hidden="true"></i></button>
             </div>
             <div class="address-container">
                 <button class="no-btn"><i class="fa fa-location-arrow" aria-hidden="true"></i></button>
@@ -134,13 +135,25 @@
                 </div>
             </div>
         </div>
-        <div class="collapse" uib-collapse="commentCollapse" id="commentBox">
+        <div class="collapse" uib-collapse="commentCollapse[house._id]" id="commentBox">
             <div class="comment-box">
-                <textarea name="comment-body" placeholder="Write a comment" id="comment-body" class="comment-body" ng-model="house.comment.text"
-                          cols="30" rows="5"></textarea>
-                <div class="save-comment">
-                    <button class="red-bg xbtn" ng-click="postComment(house)">Post Comment</button>
-                    <button class="red-bg xbtn">Cancel</button>
+                <div class="comments">
+                    <div class="comment" ng-repeat="comment in house.comments">
+                        <div class="comment-text">{{comment.text}}</div>
+                        <div class="comment-footer">
+                            <div class="comment-user">{{comment.user}}</div>
+                            <div class="comment-timestamp">{{comment.time | date: "medium"}}</div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="new-comment" ng-show="isLoggedIn && currentUser">-->
+                <div class="new-comment">
+                    <textarea name="comment-body" placeholder="Write a comment" id="comment-body" class="comment-body" ng-model="house.comment.text"
+                              cols="30" rows="5"></textarea>
+                        <div class="save-comment">
+                            <button class="red-bg xbtn" ng-click="postComment(house)">Post Comment</button>
+                            <button class="red-bg xbtn" ng-click="cancelComment(house)">Cancel</button>
+                        </div>
                 </div>
             </div>
         </div>

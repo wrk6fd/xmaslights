@@ -61,15 +61,12 @@ module.exports = function(app) {
         var obj = updatedHouse.toObject();
         delete updatedHouse._id;
 
-        console.log(obj);
-        console.log(house_id);
-
-        var query = House.update(house_id, obj, function(err, house) {
-            if(err)
+        var query = House.update({_id: house_id}, obj, function(err, house) {
+            if(err) {
                 res.send(err);
-
-            console.log(house);
-            res.json(house);
+            } else {
+                res.json(house);
+            }
         })
     });
 

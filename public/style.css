@@ -357,14 +357,41 @@ button.no-btn:active {
 }
 
 .comment-box {
+    background-color: rgb(74, 167, 167);
+    color: #efefd4;
+    margin: 6px auto;
+    padding: 6px;
+    width: 95%;
+}
+
+.comments {
+
+}
+
+.comment {
+    background-color: rgb(42, 87, 87);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+    color: #efefd4;
+    display: flex;
+    flex-direction: column;
+    margin: 12px;
+    padding: 12px;
+}
+
+.new-comment {
     border-radius: 2px;
     color: #50362A;
     display: flex;
     flex-direction: column;
     font-size: 20px;
-    margin: 6px auto;
-    padding: 6px;
-    width: 95%;
+    margin: 12px 0;
+}
+
+.comment-footer {
+    display: flex;
+    font-size: 12px;
+    justify-content: space-between;
 }
 
 .save-comment {
@@ -375,15 +402,12 @@ button.no-btn:active {
 }
 
 .comment-user {
-    border-top-right-radius: 2px;
-    border-top-left-radius: 2px;
-    border: none;
-    padding: 12px;
+
 }
 
 .comment-body {
-    border-bottom-right-radius: 2px;
-    border-bottom-left-radius: 2px;
+    border-radius: 4px;
     border: none;
     padding: 12px;
+    margin: 0 12px;
 }

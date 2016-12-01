@@ -2,6 +2,7 @@
   "name": "ChristmasLightsMapApp",
   "main": "server.js",
   "dependencies": {
+    "angular-toastr": "^2.1.1",
     "angular-ui-bootstrap": "^2.3.0",
     "aws-sdk": "^2.7.3",
     "bcrypt-nodejs": "0.0.3",

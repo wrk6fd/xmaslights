@@ -79,7 +79,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
 
     $scope.newHouseCollapse = true;
-    $scope.commentCollapse = true;
+    $scope.commentCollapse = {};
     $scope.newHouseRating = 5;
 
     $scope.isFocused = false;
@@ -178,13 +178,14 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         }, 6000);
 
         // save house
-        console.log($scope.houses[index]);
         $http.put('/houses', $scope.houses[index])
             .success(function(data) {
-                console.log('saved',data);
+                console.log('Rated!');
+                // toastr
             })
             .error(function(data) {
                 console.error(data);
+                //toastr or or handleError
             });
     };
 
@@ -205,6 +206,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     if(!$scope.houses[i].hasOwnProperty('ratings')) {
                         $scope.houses[i].ratings = [];
                     }
+                    $scope.commentCollapse[$scope.houses[i]._id] = true; //******************************
                     $scope.houses[i].comment = {
                         text: '',
                         user: '',
@@ -311,6 +313,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     // Get User's actual coordinates based on HTML5 at window load
     $scope.setMyLocation = function() {
+        console.log('getting my location');
         geolocation.getLocation().then(function(data){
 
             // Set the latitude and longitude equal to the HTML5 coordinates
@@ -320,7 +323,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             $scope.myLocation.longitude = parseFloat(coords.long).toFixed(6);
             $scope.myLocation.latitude = parseFloat(coords.lat).toFixed(6);
 
-            // console.log($scope.myLocation);
+            console.log($scope.myLocation);
             // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
 
             gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(address){
@@ -332,13 +335,11 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
     $scope.setMyLocation();
 
-    $scope.toggleComment = function(cancel) {
-        $scope.commentCollapse = !$scope.commentCollapse;
-        if(cancel) {
-            $scope.comment = {
-                user: '',
-                text: ''
-            }
+    $scope.toggleComment = function(house) {
+        $scope.commentCollapse[house._id] = !$scope.commentCollapse[house._id];
+        house.comment = {
+            user: '',
+            text: ''
         }
     };
 
@@ -350,18 +351,19 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     //     time: {type: Date, default: new Date()}
     // }],
     $scope.postComment = function(house) {
-        console.log(house);
-        house.comment.user = 'test user';
+        // house.comment.user = 'test user';
+        house.comment.user = $scope.currentUser;
         house.comment.time = new Date();
         house.comments.push(house.comment);
         delete house.comment;
-        console.log(house);
         $http.put('/houses', house)
             .success(function(data) {
-                console.log(data);
+                console.log('New Comment Posted');
+                //toastr
             })
             .error(function(data) {
                 console.error(data);
+                //toastr or handleError
             });
     };
 

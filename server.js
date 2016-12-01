@@ -14,7 +14,7 @@ var localStrategy = require('passport-local' ).Strategy;
 // -----------------------------------------------------
 // Sets the connection to MongoDB
 // mongoose.connect("mongodb://admin:password@ds041586.mlab.com:41586/karras-app");
-mongoose.connect("mongodb://127.0.0.1/karras-app");
+mongoose.connect("mongodb://localhost/karras-app");
 
 var User = require('./app/user.js');
 var House = require('./app/house.js');
