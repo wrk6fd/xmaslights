@@ -90,6 +90,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.registrationPopover = {
         templateUrl: 'registration.html'
     };
+
     $scope.loginPopover = {
         templateUrl: 'login.html'
     };
@@ -102,6 +103,14 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.ratingMsg = [];
 
     $scope.geoBased = true;
+
+    $scope.isLoggedIn = false;
+    $scope.currentUser = null;
+
+    $scope.$watch( AuthService.isLoggedIn, function ( isLoggedIn ) {
+        $scope.isLoggedIn = isLoggedIn;
+        $scope.currentUser = AuthService.currentUser();
+    });
 
     $scope.register = function() {
         // initial values
@@ -134,26 +143,8 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         // call login from service
         AuthService.login($scope.loginForm.username, $scope.loginForm.password)
         // handle success
-            .then(function (data) {
-                $scope.cancelLogin();
-                console.log(data);
-                // AuthService.getUserStatus()
-                //     .success(function (data) {
-                //         console.log(data);
-                //         if(data.status){
-                //             console.log(data);
-                //             // user = true;
-                //             user = data.user;
-                //             console.log(user);
-                //         } else {
-                //             console.log('no-status',data);
-                //             user = false;
-                //         }
-                //     })
-                //     // handle error
-                //     .error(function (data) {
-                //         user = false;
-                //     });
+            .then(function () {
+                console.log('successfully logged in');
             })
             // handle error
             .catch(function () {
@@ -165,14 +156,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.cancelLogin = function() {
         $scope.loginForm = {};
         $scope.loginIsOpen = false;
-        AuthService.getUserStatus()
-            .then(function(){
-                if (!AuthService.isLoggedIn()){
-                    console.log('not logged in');
-                } else {
-                    console.log('logged in');
-                }
-            });
     };
 
 
@@ -222,6 +205,11 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     if(!$scope.houses[i].hasOwnProperty('ratings')) {
                         $scope.houses[i].ratings = [];
                     }
+                    $scope.houses[i].comment = {
+                        text: '',
+                        user: '',
+                        time: ''
+                    };
                     $scope.houses[i].avgRating = _.round(_.mean($scope.houses[i].ratings),1);
                     $scope.ratingMsg[i] = 'Average Rating: ' + ($scope.houses[i].avgRating || 0) + ' Snowflakes';
                 }
@@ -352,6 +340,29 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                 text: ''
             }
         }
+    };
+
+
+    // comments: [{
+    //     id: {type: Number, required: false},
+    //     text: {type: [String], required: false},
+    //     user: {type: [String], required: false},
+    //     time: {type: Date, default: new Date()}
+    // }],
+    $scope.postComment = function(house) {
+        console.log(house);
+        house.comment.user = 'test user';
+        house.comment.time = new Date();
+        house.comments.push(house.comment);
+        delete house.comment;
+        console.log(house);
+        $http.put('/houses', house)
+            .success(function(data) {
+                console.log(data);
+            })
+            .error(function(data) {
+                console.error(data);
+            });
     };
 
     // Functions

@@ -61,8 +61,8 @@ module.exports = function(app) {
         var obj = updatedHouse.toObject();
         delete updatedHouse._id;
 
-        // console.log(obj);
-        // console.log(house_id);
+        console.log(obj);
+        console.log(house_id);
 
         var query = House.update(house_id, obj, function(err, house) {
             if(err)
@@ -128,8 +128,8 @@ module.exports = function(app) {
     });
 
     app.get('/user/status', function(req, res) {
+        console.log('user',req.user);
         if (!req.isAuthenticated()) {
-            console.log(req);
             return res.status(200).json({
                 status: false
             });

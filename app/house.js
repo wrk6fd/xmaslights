@@ -13,9 +13,8 @@ var HouseSchema = new Schema({
     },
     location: {type: [Number], required: false}, // [Long, Lat]
     comments: [{
-        id: {type: Number, required: false},
-        text: {type: [String], required: false},
-        user: {type: [String], required: false},
+        text: {type: String, required: false},
+        user: {type: String, required: false},
         time: {type: Date, default: new Date()}
     }],
     ratings: {type: [Number], required: false},

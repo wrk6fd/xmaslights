@@ -5,6 +5,7 @@ angular.module('AuthService', [])
 
             // create user variable
             var user = null;
+            var loggedInAs = '';
 
             function isLoggedIn() {
                 if(user) {
@@ -25,17 +26,20 @@ angular.module('AuthService', [])
                 // handle success
                     .success(function (data, status) {
                         if(status === 200 && data.status){
-                            console.log(data);
                             user = true;
-                            deferred.resolve({user: username});
+                            loggedInAs = username;
+                            console.log('currentUser: ', loggedInAs);
+                            deferred.resolve();
                         } else {
                             user = false;
+                            loggedInAs = '';
                             deferred.reject();
                         }
                     })
                     // handle error
                     .error(function (data) {
                         user = false;
+                        loggedInAs = '';
                         deferred.reject();
                     });
 
@@ -54,11 +58,13 @@ angular.module('AuthService', [])
                 // handle success
                     .success(function (data) {
                         user = false;
+                        loggedInAs = '';
                         deferred.resolve();
                     })
                     // handle error
                     .error(function (data) {
                         user = false;
+                        loggedInAs = '';
                         deferred.reject();
                     });
 
@@ -97,8 +103,9 @@ angular.module('AuthService', [])
                 return $http.get('/user/status')
                 // handle success
                     .success(function (data) {
+                        console.log(data);
                         if(data.status){
-                            console.log(data);
+                            console.log(loggedInAs);
                             user = true;
                         } else {
                             user = false;
@@ -116,7 +123,8 @@ angular.module('AuthService', [])
                 getUserStatus: getUserStatus,
                 login: login,
                 logout: logout,
-                register: register
+                register: register,
+                currentUser: function() { return loggedInAs; }
             });
 
         }]);

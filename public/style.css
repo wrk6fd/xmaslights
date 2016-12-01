@@ -367,18 +367,11 @@ button.no-btn:active {
     width: 95%;
 }
 
-.comment-box hr {
-    width: 95%;
-    margin: -2.5px auto;
-    border-color: #DDDDC2;
-    border-width: 5px;
-    z-index: 100;
-}
-
 .save-comment {
     display: flex;
     justify-content: flex-end;
     padding: 12px;
+    padding-right: 0;
 }
 
 .comment-user {

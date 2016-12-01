@@ -63,10 +63,10 @@ var HouseSchema = new Schema({
         zip: {type: String, required: false}
     },
     location: {type: [Number], required: false}, // [Long, Lat]
+    comment: {type: String, required: false},
     comments: [{
-        id: {type: Number, required: false},
-        text: {type: [String], required: false},
-        user: {type: [String], required: false},
+        text: {type: String, required: false},
+        user: {type: String, required: false},
         time: {type: Date, default: new Date()}
     }],
     ratings: {type: [Number], required: false},
