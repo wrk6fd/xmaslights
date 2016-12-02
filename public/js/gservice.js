@@ -183,7 +183,7 @@ angular.module('gservice', [])
                         lat      = location.lat(),
                         lng      = location.lng();
 
-                    return callback(location.lng(), location.lat()); // Long, Lat
+                    return callback([lng, lat]); // Long, Lat
 
                 }
             });

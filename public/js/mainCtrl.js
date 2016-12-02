@@ -78,6 +78,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         password: ''
     };
 
+    $scope.filterCollapse = true;
     $scope.newHouseCollapse = true;
     $scope.commentCollapse = {};
     $scope.newHouseRating = 5;
@@ -94,6 +95,9 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.loginPopover = {
         templateUrl: 'login.html'
     };
+    $scope.mapPopover = {
+        templateUrl: 'showMap.html'
+    };
 
     var coords = {};
     var lat = 0;
@@ -107,55 +111,105 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.isLoggedIn = false;
     $scope.currentUser = null;
 
+    $scope.mapIsOpen = {};
+
     $scope.$watch( AuthService.isLoggedIn, function ( isLoggedIn ) {
         $scope.isLoggedIn = isLoggedIn;
         $scope.currentUser = AuthService.currentUser();
     });
 
+    $scope.$watch('loginIsOpen', function(value) {
+        if(value) {
+            focus('login-username');
+        }
+    });
+    $scope.$watch('registerIsOpen', function(value) {
+        if(value) {
+            focus('register-username');
+        }
+    });
+    $scope.$watch('mapIsOpen', function(val, oldVal) {
+        console.log(val, oldVal);
+        for (var prop in $scope.mapIsOpen) {
+            if($scope.mapIsOpen.hasOwnProperty(prop)) {
+                if(val[prop] !== oldVal[prop] && val[prop] === true) {
+                    $scope.showMap($scope.houses[_.findIndex($scope.houses, ['_id', prop])]);
+                }
+            }
+        }
+    }, true);
+
+    $scope.checkIfEnterKeyWasPressed = function($event){
+        var keyCode = $event.which || $event.keyCode;
+        if (keyCode === 13) {
+            if($scope.loginIsOpen) {
+                $scope.login();
+            } else if($scope.registerIsOpen) {
+                $scope.register();
+            }
+        }
+    };
+
     $scope.register = function() {
         // initial values
         $scope.error.register = '';
 
-        // call register from service
-        AuthService.register($scope.registerForm.username, $scope.registerForm.password)
-        // handle success
-            .then(function () {
-                $scope.cancelRegistration();
-                //login and success message toastr
-            })
-            // handle error
-            .catch(function () {
-                $scope.error.register = 'We can\'t register you right now. Try again in a little while';
-            });
+        if($scope.registerForm.username === '' || $scope.registerForm.password === '') {
+            $scope.error.register = 'Please enter both username and password';
+        } else {
+            // call register from service
+            AuthService.register($scope.registerForm.username, $scope.registerForm.password)
+            // handle success
+                .then(function () {
+                    $scope.cancelRegistration();
+                    //login and success message toastr
+                })
+                // handle error
+                .catch(function () {
+                    $scope.error.register = 'We can\'t register you right now. Try again in a little while';
+                });
+        }
+
 
     };
 
     $scope.cancelRegistration = function() {
         $scope.registerForm = {};
         $scope.registerIsOpen = false;
+        $scope.error.register = '';
     };
 
     $scope.login = function () {
 
         // initial values
         $scope.error.login = '';
+        if($scope.loginForm.username === '' || $scope.loginForm.password === '') {
+            $scope.error.login = 'Please enter both username and password';
+        } else {
+            // call login from service
+            AuthService.login($scope.loginForm.username, $scope.loginForm.password)
+            // handle success
+                .then(function () {
+                    $scope.cancelLogin();
+                    console.log('successfully logged in');
+                })
+                // handle error
+                .catch(function () {
+                    $scope.error.login = 'Looks like your username and/or password aren\'t quite correct. Try again';
+                });
+        }
 
-        // call login from service
-        AuthService.login($scope.loginForm.username, $scope.loginForm.password)
-        // handle success
-            .then(function () {
-                console.log('successfully logged in');
-            })
-            // handle error
-            .catch(function () {
-                $scope.error.login = "Incorrect username and/or password";
-            });
 
     };
 
     $scope.cancelLogin = function() {
         $scope.loginForm = {};
         $scope.loginIsOpen = false;
+        $scope.error.login = '';
+    };
+
+    $scope.toggleFilter = function() {
+        $scope.filterCollapse = !$scope.filterCollapse;
     };
 
 
@@ -206,7 +260,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     if(!$scope.houses[i].hasOwnProperty('ratings')) {
                         $scope.houses[i].ratings = [];
                     }
-                    $scope.commentCollapse[$scope.houses[i]._id] = true; //******************************
+                    $scope.commentCollapse[$scope.houses[i]._id] = true;
                     $scope.houses[i].comment = {
                         text: '',
                         user: '',
@@ -214,6 +268,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     };
                     $scope.houses[i].avgRating = _.round(_.mean($scope.houses[i].ratings),1);
                     $scope.ratingMsg[i] = 'Average Rating: ' + ($scope.houses[i].avgRating || 0) + ' Snowflakes';
+                    $scope.mapIsOpen[$scope.houses[i]._id] = false;
                 }
             })
             .error(function(data) {
@@ -229,21 +284,31 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                 $scope.newHouse.ratings = [];
                 $scope.newHouse.ratings.push($scope.newHouseRating);
             }
-            $scope.newHouse.pictures = [];
-            $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
-            console.log('uploading',$scope.newHouse);
-            $http.post('/houses', $scope.newHouse)
-                .success(function(data) {
-                    console.log('added',data);
-                    $scope.upload(uniqueFileName, data._id);
+            $scope.newHouse.location = [];
+            var addrStr = $scope.newHouse.address.street + ', ' + $scope.newHouse.address.city + ', ' + $scope.newHouse.address.state + ' ' + $scope.newHouse.address.zip;
+            gservice.fGeocode(addrStr, function(lngLat) {
+                console.log(lngLat);
+                $scope.newHouse.location =  lngLat;
 
-                    setTimeout(function() {
-                        $scope.houses.push(data);
-                    }, 1000);
-                })
-                .error(function(data) {
-                    console.error(data);
-                });
+                $scope.newHouse.pictures = [];
+                $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
+                console.log('uploading',$scope.newHouse);
+                $http.post('/houses', $scope.newHouse)
+                    .success(function(data) {
+                        console.log('added',data);
+                        $scope.upload(uniqueFileName, data._id);
+
+                        setTimeout(function() {
+                            $scope.houses.push(data);
+                        }, 1000);
+                    })
+                    .error(function(data) {
+                        console.error(data);
+                    });
+
+            });
+
+
         } else {
             $scope.error.file = 'Don\'t forget to upload a picture to share'
         }
@@ -257,7 +322,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         AWS.config.update({ accessKeyId: 'AKIAJNWEOZKVKAYI4YRA', secretAccessKey: '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' });
         AWS.config.region = 'us-east-1';
         var bucket = new AWS.S3({ params: { Bucket: 'house-picture-uploads' } });
-        console.log($scope.file);
+        // console.log($scope.file);
         if($scope.file) {
             // Perform File Size Check First
             var fileSize = Math.round(parseInt($scope.file.size));
@@ -313,7 +378,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     // Get User's actual coordinates based on HTML5 at window load
     $scope.setMyLocation = function() {
-        console.log('getting my location');
         geolocation.getLocation().then(function(data){
 
             // Set the latitude and longitude equal to the HTML5 coordinates
@@ -327,6 +391,9 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
 
             gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(address){
+                $scope.newHouse.location = [];
+                $scope.newHouse.location.push($scope.myLocation.longitude);
+                $scope.newHouse.location.push($scope.myLocation.latitude);
                 $scope.newHouse.address = address;
                 console.log($scope.newHouse);
             });
@@ -335,11 +402,19 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
     $scope.setMyLocation();
 
+    $scope.showMap = function(house) {
+        console.log(house);
+        // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
+    };
+
     $scope.toggleComment = function(house) {
         $scope.commentCollapse[house._id] = !$scope.commentCollapse[house._id];
         house.comment = {
             user: '',
             text: ''
+        };
+        if(!$scope.commentCollapse[house._id] && $scope.isLoggedIn && $scope.currentUser) {
+            focus('comment-body-' + house._id);
         }
     };
 
@@ -350,21 +425,32 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     //     user: {type: [String], required: false},
     //     time: {type: Date, default: new Date()}
     // }],
+    $scope.enterPostComment = function($event, house) {
+        var keyCode = $event.which || $event.keyCode;
+        console.log($event);
+        if (keyCode === 13 && $event.shiftKey) {
+            $event.stopPropagation();
+            $scope.postComment(house);
+        }
+    };
+
     $scope.postComment = function(house) {
-        // house.comment.user = 'test user';
-        house.comment.user = $scope.currentUser;
-        house.comment.time = new Date();
-        house.comments.push(house.comment);
-        delete house.comment;
-        $http.put('/houses', house)
-            .success(function(data) {
-                console.log('New Comment Posted');
-                //toastr
-            })
-            .error(function(data) {
-                console.error(data);
-                //toastr or handleError
-            });
+        if(house.comment.text !== '') {
+            // house.comment.user = 'test user';
+            house.comment.user = $scope.currentUser;
+            house.comment.time = new Date();
+            house.comments.push(house.comment);
+            delete house.comment;
+            $http.put('/houses', house)
+                .success(function(data) {
+                    console.log('New Comment Posted');
+                    //toastr
+                })
+                .error(function(data) {
+                    console.error(data);
+                    //toastr or handleError
+                });
+        }
     };
 
     // Functions
