@@ -28,7 +28,7 @@ angular.module('AuthService', [])
                         if(status === 200 && data.status){
                             user = true;
                             loggedInAs = username;
-                            console.log('currentUser: ', loggedInAs);
+                            console.log('Logged in as: ', loggedInAs);
                             deferred.resolve();
                         } else {
                             user = false;
@@ -103,9 +103,7 @@ angular.module('AuthService', [])
                 return $http.get('/user/status')
                 // handle success
                     .success(function (data) {
-                        console.log(data);
                         if(data.status){
-                            console.log(loggedInAs);
                             user = true;
                         } else {
                             user = false;

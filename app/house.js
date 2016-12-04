@@ -6,12 +6,13 @@ var HouseSchema = new Schema({
     nickname: {type:[String], required: false},
     pictures: {type:[String], required: false},
     address: {
-        street: {type: String, required: false},
+        streetNumber: {type: String, required: false},
+        streetName: {type: String, required: false},
         city: {type: String, required: false},
         state: {type: String, required: false},
         zip: {type: String, required: false}
     },
-    location: {type: [Number], required: false}, // [Long, Lat]
+    location: {type: [Number], required: false}, // [Longitude, Latitude]
     comments: [{
         text: {type: String, required: false},
         user: {type: String, required: false},

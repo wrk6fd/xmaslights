@@ -210,10 +210,25 @@ header {
 nav {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-around;
     padding-left: 24px;
     padding-right: 24px;
 }
+
+nav button {
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+}
+
+.left-buttons {
+    flex-grow: 1;
+}
+
+/*.filter-button {*/
+    /*padding-right: 24px;*/
+    /*padding-left: 24px;*/
+    /*!*margin-right: 24px;*!*/
+/*}*/
 
 .filter {
     color: #DDDDC2;
@@ -226,7 +241,7 @@ nav {
 .filter .middle-form,
 .filter .right-form {
     background-color: rgba(42, 87, 87, 0.7);
-    min-height: 355px;
+    height: 355px;
     padding: 24px;
 }
 
@@ -243,8 +258,23 @@ nav {
     list-style: none;
 }
 
+.filter-label {
+    font-size: 20px;
+}
+
+.rating-label {
+    width: 100%;
+    text-align: center;
+}
+
 .filter-rating input {
     margin: 12px 6px;
+}
+
+.filter-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
 }
 
 
@@ -456,10 +486,47 @@ button.no-btn:active {
 
 .map-popover {
     height: 400px;
-    max-width: 500px;
+    width: 95%;
+    margin: 6px auto;
+    padding: 6px;
 }
 
 .map {
     height: 400px;
-    width: 500px;
+    width: 60%;
+    color: #A80030;
+}
+
+.pac-container {
+    z-index: 10000 !important;
+    display: block;
+}
+
+.right-panel {
+    font-family: 'Roboto','sans-serif';
+    line-height: 30px;
+    padding-left: 10px;
+}
+
+.right-panel select, .right-panel input {
+    font-size: 10px;
+}
+
+.right-panel select {
+    width: 100%;
+}
+
+.right-panel i {
+    font-size: 8px;
+}
+.right-panel {
+    font-size: 12px;
+    height: 400px;
+    float: right;
+    width: 39%;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+.map {
+    margin-right: 40%;
 }

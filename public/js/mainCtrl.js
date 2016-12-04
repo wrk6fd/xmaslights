@@ -4,66 +4,69 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     // Initializes Variables
     // ----------------------------------------------------------------------------
-    $scope.houses = [
-        {
-            id: 1,
-            nickname: 'Santa\'s Funhouse',
-            pictures: ['img/christmas-house-1.jpg', 'img/christmas-lights.jpg'],
-            address: {
-                street: '13548 Gray Bill Court',
-                city: 'Clifton',
-                state: 'VA',
-                zip: '20124'
-            },
-            location: [-77.414032, 38.837635], //Long, Lat
-            comments: [
-                {
-                    id: 1,
-                    text: 'Awesome lights!',
-                    time: new Date('Tue Nov 1 2016 06:25:36 GMT-0500 (EST)')
-                },
-                {
-                    id: 2,
-                    text: 'Mesmerizing!',
-                    time: new Date('Thu Nov 17 2016 06:25:36 GMT-0500 (EST)')
-                }
-            ],
-            ratings: [4,5,4,3,4,5],
-            // ratings: 5,
-            tags: ['Lights', 'Santa', 'Busy', 'happy'],
-            created_at: new Date('Wed Nov 16 2016 09:25:36 GMT-0500 (EST)'),
-            updated_at: new Date()
-        },
-        {
-            id: 2,
-            nickname: 'Tree Farm',
-            pictures: ['img/xmas_lights_house.jpg'],
-            address: {
-                street: '5820 Waterdale Ct',
-                city: 'Centreville',
-                state: 'VA',
-                zip: '20121'
-            },
-            location: [-77.419983, 38.833945], //Long, Lat
-            comments: [
-                {
-                    id: 1,
-                    text: 'Trees look incredible!',
-                    time: new Date('Tue Nov 1 2016 11:37:36 GMT-0500 (EST)')
-                },
-                {
-                    id: 2,
-                    text: 'Must have been a lot of work!',
-                    time: new Date('Thu Nov 17 2016 09:56:36 GMT-0500 (EST)')
-                }
-            ],
-            ratings: [1,2,3,1,1,2],
-            // ratings: 3,
-            tags: ['Snowman', 'farm', 'trees', 'fun', 'clown', 'busy', 'happy'],
-            created_at: new Date('Mon Nov 14 2016 09:40:36 GMT-0500 (EST)'),
-            updated_at: new Date()
-        }
-    ];
+    // $scope.houses = [
+    //     {
+    //         id: 1,
+    //         nickname: 'Santa\'s Funhouse',
+    //         pictures: ['img/christmas-house-1.jpg', 'img/christmas-lights.jpg'],
+    //         address: {
+    //             streetNumber: '13548',
+    //             streetName: 'Gray Bill Court',
+    //             city: 'Clifton',
+    //             state: 'VA',
+    //             zip: '20124'
+    //         },
+    //         location: [-77.414032, 38.837635], //longitude, latitude
+    //         comments: [
+    //             {
+    //                 id: 1,
+    //                 text: 'Awesome lights!',
+    //                 time: new Date('Tue Nov 1 2016 06:25:36 GMT-0500 (EST)')
+    //             },
+    //             {
+    //                 id: 2,
+    //                 text: 'Mesmerizing!',
+    //                 time: new Date('Thu Nov 17 2016 06:25:36 GMT-0500 (EST)')
+    //             }
+    //         ],
+    //         ratings: [4,5,4,3,4,5],
+    //         // ratings: 5,
+    //         tags: ['Lights', 'Santa', 'Busy', 'happy'],
+    //         created_at: new Date('Wed Nov 16 2016 09:25:36 GMT-0500 (EST)'),
+    //         updated_at: new Date()
+    //     },
+    //     {
+    //         id: 2,
+    //         nickname: 'Tree Farm',
+    //         pictures: ['img/xmas_lights_house.jpg'],
+    //         address: {
+    //             streetNumber: '5820',
+    //             streetName: 'Waterdale Ct',
+    //             city: 'Centreville',
+    //             state: 'VA',
+    //             zip: '20121'
+    //         },
+    //         location: [-77.419983, 38.833945], //longitude, latitude
+    //         comments: [
+    //             {
+    //                 id: 1,
+    //                 text: 'Trees look incredible!',
+    //                 time: new Date('Tue Nov 1 2016 11:37:36 GMT-0500 (EST)')
+    //             },
+    //             {
+    //                 id: 2,
+    //                 text: 'Must have been a lot of work!',
+    //                 time: new Date('Thu Nov 17 2016 09:56:36 GMT-0500 (EST)')
+    //             }
+    //         ],
+    //         ratings: [1,2,3,1,1,2],
+    //         // ratings: 3,
+    //         tags: ['Snowman', 'farm', 'trees', 'fun', 'clown', 'busy', 'happy'],
+    //         created_at: new Date('Mon Nov 14 2016 09:40:36 GMT-0500 (EST)'),
+    //         updated_at: new Date()
+    //     }
+    // ];
+    $scope.houses = [];
 
     $scope.error = {};
 
@@ -100,8 +103,8 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
 
     var coords = {};
-    var lat = 0;
-    var long = 0;
+    var latitude = 0;
+    var longitude = 0;
 
     $scope.starRating1 = 4;
     $scope.ratingMsg = [];
@@ -111,7 +114,29 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     $scope.isLoggedIn = false;
     $scope.currentUser = null;
 
-    $scope.mapIsOpen = {};
+    $scope.mapCollapse = {};
+
+    $scope.filter = {
+        name: '',
+        place: '',
+        streetNumber: '',
+        streetName: '',
+        city: '',
+        state: '',
+        zip: '',
+        location: {
+            latitude: '',
+            longitude: ''
+        },
+        distance: '',
+        snow5: '',
+        snow4: '',
+        snow3: '',
+        snow2: '',
+        snow1: '',
+        sort: 'dist'
+    };
+
 
     $scope.$watch( AuthService.isLoggedIn, function ( isLoggedIn ) {
         $scope.isLoggedIn = isLoggedIn;
@@ -128,16 +153,51 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             focus('register-username');
         }
     });
-    $scope.$watch('mapIsOpen', function(val, oldVal) {
-        console.log(val, oldVal);
-        for (var prop in $scope.mapIsOpen) {
-            if($scope.mapIsOpen.hasOwnProperty(prop)) {
-                if(val[prop] !== oldVal[prop] && val[prop] === true) {
-                    $scope.showMap($scope.houses[_.findIndex($scope.houses, ['_id', prop])]);
-                }
-            }
-        }
-    }, true);
+
+    var queryBody = {};
+    var lastQuery = [];
+    $scope.filterResults = function() {
+        console.log($scope.filter);
+        queryBody = {
+            address: {
+                streetNumber: $scope.filter.streetNumber,
+                streetName: $scope.filter.streetName,
+                city: $scope.filter.city,
+                state: $scope.filter.state,
+                zip: $scope.filter.zip
+            },
+            location: $scope.filter.location, // latitude, longitude
+            distance: $scope.filter.distance,
+            rating5: $scope.filter.snow5,
+            rating4: $scope.filter.snow4,
+            rating3: $scope.filter.snow3,
+            rating2: $scope.filter.snow2,
+            rating1: $scope.filter.snow1
+        };
+
+        // Post the queryBody to the /query POST route to retrieve the filtered results
+        $http.post('/query', queryBody)
+
+        // Store the filtered results in queryResults
+            .success(function(queryResults){
+
+                // Query Body and Result Logging
+                console.log("QueryBody:");
+                console.log(queryBody);
+                console.log("QueryResults:");
+                console.log(queryResults);
+
+                lastQuery = queryResults;
+
+                // gservice.refresh(queryBody.latitude, queryBody.longitude, queryResults);
+
+                // Count the number of records retrieved for the panel-footer
+                $scope.queryCount = queryResults.length;
+            })
+            .error(function(queryResults){
+                console.log('Error ' + queryResults);
+            })
+    };
 
     $scope.checkIfEnterKeyWasPressed = function($event){
         var keyCode = $event.which || $event.keyCode;
@@ -161,6 +221,9 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             AuthService.register($scope.registerForm.username, $scope.registerForm.password)
             // handle success
                 .then(function () {
+                    $scope.loginForm.username = $scope.registerForm.username;
+                    $scope.loginForm.password = $scope.registerForm.password;
+                    $scope.login();
                     $scope.cancelRegistration();
                     //login and success message toastr
                 })
@@ -179,15 +242,20 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         $scope.error.register = '';
     };
 
-    $scope.login = function () {
-
+    $scope.login = function (un,pw) {
+        var username = $scope.loginForm.username;
+        var password = $scope.loginForm.password;
+        if(un && pw) {
+            username = un;
+            password = pw;
+        }
         // initial values
         $scope.error.login = '';
-        if($scope.loginForm.username === '' || $scope.loginForm.password === '') {
+        if(username === '' || password === '') {
             $scope.error.login = 'Please enter both username and password';
         } else {
             // call login from service
-            AuthService.login($scope.loginForm.username, $scope.loginForm.password)
+            AuthService.login(username, password)
             // handle success
                 .then(function () {
                     $scope.cancelLogin();
@@ -195,7 +263,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                 })
                 // handle error
                 .catch(function () {
-                    $scope.error.login = 'Looks like your username and/or password aren\'t quite correct. Try again';
+                    $scope.error.login = 'Your username or password is incorrect. Try again';
                 });
         }
 
@@ -210,6 +278,34 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     $scope.toggleFilter = function() {
         $scope.filterCollapse = !$scope.filterCollapse;
+        if(!$scope.filterCollapse) {
+            $scope.filter = $scope.myLocation;
+            $scope.filter.distance = 10;
+            setTimeout(function() {
+                focus('filter-address');
+            }, 1000);
+        } else if($scope.filterCollapse) {
+            $scope.filter = {
+                name: '',
+                place: '',
+                streetNumber: '',
+                streetName: '',
+                city: '',
+                state: '',
+                zip: '',
+                location: {
+                    latitude: '',
+                    longitude: ''
+                },
+                distance: '',
+                snow5: '',
+                snow4: '',
+                snow3: '',
+                snow2: '',
+                snow1: '',
+                sort: 'dist'
+            };
+        }
     };
 
 
@@ -251,8 +347,17 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         $scope.value = param;
     };
 
+    $scope.getHousesUrl = function() {
+        if($scope.myLocation) {
+            console.log('using my location', $scope.myLocation);
+            return $http.get('/houses', { params: { latitude: $scope.myLocation.latitude, longitude: $scope.myLocation.longitude } });
+        } else {
+            return $http.get('/houses');
+        }
+    };
+
     $scope.getAllHouses = function() {
-        $http.get('/houses')
+        $scope.getHousesUrl()
             .success(function(data) {
                 // console.log(data);
                 $scope.houses = data;
@@ -268,45 +373,46 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     };
                     $scope.houses[i].avgRating = _.round(_.mean($scope.houses[i].ratings),1);
                     $scope.ratingMsg[i] = 'Average Rating: ' + ($scope.houses[i].avgRating || 0) + ' Snowflakes';
-                    $scope.mapIsOpen[$scope.houses[i]._id] = false;
+                    $scope.mapCollapse[$scope.houses[i]._id] = true;
                 }
             })
             .error(function(data) {
                console.error(data);
             });
     };
-    $scope.getAllHouses();
 
     $scope.addHouse = function() {
         if($scope.file) {
+            console.log('starting to add house');
             var uniqueFileName = $scope.uniqueString() + '-' + $scope.file.name;
             if(!$scope.newHouse.ratings) {
                 $scope.newHouse.ratings = [];
                 $scope.newHouse.ratings.push($scope.newHouseRating);
             }
+            $scope.newHouse.avgRating = $scope.newHouseRating;
+            // $scope.newHouse.location = [];
+            // var addrStr = $scope.newHouse.address.street + ', ' + $scope.newHouse.address.city + ', ' + $scope.newHouse.address.state + ' ' + $scope.newHouse.address.zip;
+            // gservice.fGeocode(addrStr, function(lngLat) {
+            //     $scope.newHouse.location =  lngLat;
+
+            // $scope.newHouse.address.street = ($scope.newHouse.address.streetNumber ? $scope.newHouse.address.streetNumber + ' ' + $scope.newHouse.address.streetName : $scope.filter.streetName),
             $scope.newHouse.location = [];
-            var addrStr = $scope.newHouse.address.street + ', ' + $scope.newHouse.address.city + ', ' + $scope.newHouse.address.state + ' ' + $scope.newHouse.address.zip;
-            gservice.fGeocode(addrStr, function(lngLat) {
-                console.log(lngLat);
-                $scope.newHouse.location =  lngLat;
+            $scope.newHouse.location.push($scope.newHouse.longitude);
+            $scope.newHouse.location.push($scope.newHouse.latitude);
 
                 $scope.newHouse.pictures = [];
                 $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
-                console.log('uploading',$scope.newHouse);
+                console.log('adding house: ',$scope.newHouse);
                 $http.post('/houses', $scope.newHouse)
                     .success(function(data) {
-                        console.log('added',data);
-                        $scope.upload(uniqueFileName, data._id);
-
-                        setTimeout(function() {
-                            $scope.houses.push(data);
-                        }, 1000);
+                        console.log('added house to db: ',data);
+                        $scope.upload(uniqueFileName, data, true);
                     })
                     .error(function(data) {
                         console.error(data);
                     });
 
-            });
+            // });
 
 
         } else {
@@ -315,10 +421,10 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
 
     $scope.sizeLimit      = 3*10585760; // 30MB in Bytes
-    $scope.uploadProgress = 0;
+    // $scope.uploadProgress = 0;
     //l4DhYwjJvHdXkmruk32ZYPLGu039ZGLQpwjE9NqL
     //AKIAJNWEOZKVKAYI4YRA
-    $scope.upload = function(fileName, failure_id) {
+    $scope.upload = function(fileName, house, newHouse) {
         AWS.config.update({ accessKeyId: 'AKIAJNWEOZKVKAYI4YRA', secretAccessKey: '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' });
         AWS.config.region = 'us-east-1';
         var bucket = new AWS.S3({ params: { Bucket: 'house-picture-uploads' } });
@@ -339,30 +445,26 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
             bucket.putObject(params, function(err, data) {
                 if(err) {
+                    // delete failure_house._id
                     console.error(err.message, err.code);
                     // toastr.error(err.message,err.code);
                     return false;
                 }
                 else {
-                    // Upload Successfully Finished
-                    // toastr.success('File Uploaded Successfully', 'Done');
-                    console.log('success');
-                    if(failure_id) {
+                    if(newHouse) {
+                        // Upload Successfully Finished
+                        // toastr.success('File Uploaded Successfully', 'Done');
+                        console.log('Successfully Added New House: ', house);
+                        $scope.houses.push(house);
+                        $scope.commentCollapse[house._id] = true;
+                        $scope.mapCollapse[house._id] = true;
                         $scope.newHouseCollapse = true;
-                        $scope.newHouse = {};
+                        console.log('new house collapsed');
+                        $scope.newHouse = $scope.myLocation;
                     }
-
-                    // Reset The Progress Bar
-                    setTimeout(function() {
-                        $scope.uploadProgress = 0;
-                        $scope.$digest();
-                    }, 4000);
+                    $scope.file = null;
                 }
-            })
-                .on('httpUploadProgress',function(progress) {
-                    $scope.uploadProgress = Math.round(progress.loaded / progress.total * 100);
-                    $scope.$digest();
-                });
+            });
         }
         else {
             // No File Selected
@@ -377,34 +479,49 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     // $scope.myLocation.longitude = -98.350;
 
     // Get User's actual coordinates based on HTML5 at window load
-    $scope.setMyLocation = function() {
+    $scope.setMyLocation = function(getHouses) {
         geolocation.getLocation().then(function(data){
 
             // Set the latitude and longitude equal to the HTML5 coordinates
-            coords = {lat:data.coords.latitude, long:data.coords.longitude};
+            coords = {latitude:data.coords.latitude, longitude:data.coords.longitude};
 
             // Display coordinates in location textboxes rounded to six decimal points
-            $scope.myLocation.longitude = parseFloat(coords.long).toFixed(6);
-            $scope.myLocation.latitude = parseFloat(coords.lat).toFixed(6);
+            // $scope.myLocation.location = {
+            //     longitude: parseFloat(coords.longitude).toFixed(6),
+            //     latitude: parseFloat(coords.latitude).toFixed(6)
+            // };
+            $scope.myLocation.longitude = parseFloat(coords.longitude).toFixed(6);
+            $scope.myLocation.latitude = parseFloat(coords.latitude).toFixed(6);
 
-            console.log($scope.myLocation);
             // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
 
-            gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(address){
+            gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(geoLocation){
+                console.log(geoLocation);
+                $scope.myLocation.address = geoLocation.address;
+                $scope.myLocation.name = geoLocation.name;
+
+                $scope.newHouse.name = geoLocation.name;
+                $scope.newHouse.address = geoLocation.address;
+
                 $scope.newHouse.location = [];
                 $scope.newHouse.location.push($scope.myLocation.longitude);
                 $scope.newHouse.location.push($scope.myLocation.latitude);
-                $scope.newHouse.address = address;
-                console.log($scope.newHouse);
+                $scope.newHouse.longitude = $scope.myLocation.longitude;
+                $scope.newHouse.latitude = $scope.myLocation.latitude;
+
+                if(getHouses) $scope.getAllHouses();
+
             });
 
         });
     };
-    $scope.setMyLocation();
+    $scope.setMyLocation(true);
 
     $scope.showMap = function(house) {
-        console.log(house);
-        // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
+        $scope.mapCollapse[house._id] = !$scope.mapCollapse[house._id];
+        console.log(house, $scope.myLocation);
+        gservice.mapAddress(house, $scope.myLocation);
+        // gservice.refresh(house.location[1], house.location[0], null, house);
     };
 
     $scope.toggleComment = function(house) {
@@ -456,15 +573,15 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     // Functions
     // ----------------------------------------------------------------------------
     // Get coordinates based on mouse click. When a click event is detected....
-    $rootScope.$on("clicked", function(){
-
-        // Run the gservice functions associated with identifying coordinates
-        $scope.$apply(function(){
-            $scope.myLocation.latitude = parseFloat(gservice.clickLat).toFixed(6);
-            $scope.myLocation.longitude = parseFloat(gservice.clickLong).toFixed(6);
-            $scope.myLocation.htmlverified = "Nope (Thanks for spamming my map...)";
-        });
-    });
+    // $rootScope.$on("clicked", function(){
+    //
+    //     // Run the gservice functions associated with identifying coordinates
+    //     $scope.$apply(function(){
+    //         $scope.myLocation.latitude = parseFloat(gservice.clickLat).toFixed(6);
+    //         $scope.myLocation.longitude = parseFloat(gservice.clickLong).toFixed(6);
+    //         $scope.myLocation.htmlverified = "Nope (Thanks for spamming my map...)";
+    //     });
+    // });
 
 
     $scope.uniqueString = function() {
@@ -522,5 +639,25 @@ directive('file', function() {
             scope.$on('$destroy', function() {
                 element.off(attr.eventFocus);
             });
+        };
+    })
+
+    .directive('googleplace', function() {
+        return {
+            require : 'ngModel',
+            link : function(scope, element, attrs, model) {
+                var options = {
+                    types : [],
+                };
+                scope.gPlace = new google.maps.places.Autocomplete(element[0],
+                    options);
+
+                google.maps.event.addListener(scope.gPlace, 'place_changed',
+                    function() {
+                        scope.$apply(function() {
+                            model.$setViewValue(element.val());
+                        });
+                    });
+            }
         };
     });

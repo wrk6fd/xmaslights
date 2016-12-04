@@ -2,188 +2,170 @@
 angular.module('gservice', [])
     .factory('gservice', function($rootScope, $http, $q){
 
+        var googleMapService = {};
+
+        var mapped = {};
+
+        // googleMapService.clickLat  = 0;
+        // googleMapService.clickLong = 0;
+        // Array of locations obtained from API calls
+        // var locations = [];
+        // Handling Clicks and location selection
+        // var currentSelectedMarker;
+
         // Initialize Variables
         // -------------------------------------------------------------
         // Service our factory will return
-        var googleMapService = {};
 
-        // Array of locations obtained from API calls
-        var locations = [];
+        googleMapService.mapAddress = function(house, myLocation) {
+            var geocoder = new google.maps.Geocoder();
+            var directionsDisplay = new google.maps.DirectionsRenderer;
+            var directionsService = new google.maps.DirectionsService;
 
-        // Selected Location (initialize to center of America)
-        var selectedLat = 39.50;
-        var selectedLong = -98.35;
+            var address = house.address.streetNumber + ' ' + house.address.streetName + ', ' +
+                house.address.city + ', ' + house.address.state + ' ' + house.address.zip;
 
-        var savedFilter = [];
+            geocoder.geocode({ 'address': address }, function(results, status) {
+                if(status == google.maps.GeocoderStatus.OK) {
+                    var mapOptions = {
+                        zoom: 16,
+                        center: results[0].geometry.location,
+                        // disableDefaultUI: true
+                    };
 
-        // Handling Clicks and location selection
-        googleMapService.clickLat  = 0;
-        googleMapService.clickLong = 0;
+                    var map = new google.maps.Map(document.getElementById('map-' + house._id), mapOptions);
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location
+                    });
 
-        // Functions
-        // --------------------------------------------------------------
-        // Refresh the Map with new data. Function will take new latitude and longitude coordinates.
-        googleMapService.refresh = function(latitude, longitude, filteredResults){
-            console.log('refreshing');
+                    if(mapped[house._id] !== myLocation) {
 
-            // Clears the holding array of locations
-            locations = [];
+                        mapped[house._id] = myLocation;
+                        console.log(mapped);
 
-            // Set the selected lat and long equal to the ones provided on the refresh() call
-            selectedLat = latitude;
-            selectedLong = longitude;
+                        directionsDisplay.setMap(map);
+                        directionsDisplay.setPanel(null);
+                        directionsDisplay.setPanel(document.getElementById('map-right-panel-' + house._id));
 
-            savedFilter = filteredResults;
-
-            if(filteredResults) {
-                // Then convert the filtered results into map points.
-                locations = convertToMapPoints(filteredResults);
-
-                // Then, initialize the map -- noting that a filter was used (to mark icons yellow)
-                initialize(latitude, longitude, true);
-            }
-
-            // If no filter is provided in the refresh() call...
-            else {
-
-                // Perform an AJAX call to get all of the records in the db.
-                $http.get('/users').success(function(response){
-
-                    // Then convert the results into map points
-                    locations = convertToMapPoints(response);
-
-                    // Then initialize the map -- noting that no filter was used.
-                    initialize(latitude, longitude, false);
-                }).error(function(){});
-            }
-        };
-
-        // Private Inner Functions
-        // --------------------------------------------------------------
-        // Convert a JSON of users into map points
-        var convertToMapPoints = function(response){
-
-            // Clear the locations holder
-            var locations = [];
-
-            // Loop through all of the JSON entries provided in the response
-            for(var i= 0; i < response.length; i++) {
-                var user = response[i];
-
-                // Create popup windows for each record
-                var  contentString =
-                    '<p><b>Username</b>: ' + user.username +
-                    '<br><b>Age</b>: ' + user.age +
-                    '<br><b>Gender</b>: ' + user.gender +
-                    '<br><b>Favorite Language</b>: ' + user.favlang +
-                    '</p>';
-
-                // Converts each of the JSON records into Google Maps Location format (Note [Lat, Lng] format).
-                locations.push({
-                    latlon: new google.maps.LatLng(user.location[1], user.location[0]),
-                    message: new google.maps.InfoWindow({
-                        content: contentString,
-                        maxWidth: 320
-                    }),
-                    username: user.username,
-                    gender: user.gender,
-                    age: user.age,
-                    favlang: user.favlang
-                });
-            }
-            // location is now an array populated with records in Google Maps format
-            return locations;
-        };
-
-        // Initializes the map
-        var initialize = function(latitude, longitude, filter) {
-
-            // Uses the selected lat, long as starting point
-            var myLatLng = {lat: parseFloat(selectedLat), lng: parseFloat(selectedLong)};
-
-            // If map has not been created...
-            if (!map){
-
-                // Create a new map and place in the index.html page
-                var map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 3,
-                    center: myLatLng
-                });
-            }
-
-            // If a filter was used set the icons yellow, otherwise blue
-            if(filter){
-                icon = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-            }
-            else{
-                icon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-            }
-
-            // Loop through each location in the array and place a marker
-            locations.forEach(function(n, i){
-                var marker = new google.maps.Marker({
-                    position: n.latlon,
-                    map: map,
-                    title: "Big Map",
-                    icon: icon,
-                });
-
-                // For each marker created, add a listener that checks for clicks
-                google.maps.event.addListener(marker, 'click', function(e){
-
-                    // When clicked, open the selected marker's message
-                    currentSelectedMarker = n;
-                    n.message.open(map, marker);
-                });
-            });
-
-            // Set initial location as a bouncing red marker
-            var initialLocation = new google.maps.LatLng(latitude, longitude);
-            var marker = new google.maps.Marker({
-                position: initialLocation,
-                // animation: google.maps.Animation.BOUNCE,
-                map: map,
-                icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-            });
-            lastMarker = marker;
-
-            // Function for moving to a selected location
-            map.panTo(new google.maps.LatLng(latitude, longitude));
-
-            // Clicking on the Map moves the bouncing red marker
-            google.maps.event.addListener(map, 'click', function(e){
-                var marker = new google.maps.Marker({
-                    position: e.latLng,
-                    // animation: google.maps.Animation.BOUNCE,
-                    map: map,
-                    icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                });
-
-                // When a new spot is selected, delete the old red bouncing marker
-                if(lastMarker){
-                    lastMarker.setMap(null);
+                        getDirections(directionsService, directionsDisplay, address, myLocation.name);
+                    }
+                } else {
+                    console.log(status);
                 }
-
-                // Create a new red bouncing marker and move to it
-                lastMarker = marker;
-                map.panTo(marker.position);
-
-                // Update Broadcasted Variable (lets the panels know to change their lat, long values)
-                googleMapService.clickLat = marker.getPosition().lat();
-                googleMapService.clickLong = marker.getPosition().lng();
-                $rootScope.$broadcast("clicked");
             });
         };
+
+
+        var getDirections = function(directionsService, directionsDisplay, house, myLocation) {
+            var start = myLocation;
+            var end = house;
+
+            directionsService.route({
+                origin: start,
+                destination: end,
+                travelMode: 'DRIVING'
+            }, function(response, status) {
+                if(status === 'OK') {
+                    directionsDisplay.setDirections(response);
+                } else {
+                    console.log(response,status);
+                }
+            });
+
+        };
+
+
+        // // Functions
+        // // --------------------------------------------------------------
+        // // Refresh the Map with new data. Function will take new latitude and longitude coordinates.
+        // googleMapService.refresh = function(latitude, longitude, filteredResults, house){
+        //     console.log('refreshing');
+        //
+        //     // Clears the holding array of locations
+        //     locations = [];
+        //
+        //     // Then convert the results into map points
+        //     locations = convertToMapPoints(house);
+        //
+        //     // Then initialize the map
+        //     initialize(latitude, longitude, false, house);
+        //
+        // };
+        //
+        // // Private Inner Functions
+        // // --------------------------------------------------------------
+        // // Convert a JSON of users into map points
+        // var convertToMapPoints = function(house){
+        //
+        //     // Clear the locations holder
+        //     locations = [];
+        //
+        //     // Create popup windows for each record
+        //     var  contentString =
+        //         '<p>' + house.address.streetNumber + ' ' + house.address.streetName + '</p>' +
+        //         '<p>' + house.address.city + ', ' + house.address.state + ' ' + house.address.zip + '</p>';
+        //
+        //     // Converts each of the JSON records into Google Maps Location format (Note [Latitude, Longitude] format).
+        //     locations.push({
+        //         latlon: new google.maps.LatLng(house.location[1], house.location[0]),
+        //         message: new google.maps.InfoWindow({
+        //             content: contentString,
+        //             maxWidth: 320
+        //         })
+        //     });
+        //     // location is now an array populated with records in Google Maps format
+        //     return locations;
+        // };
+        //
+        // // Initializes the map
+        // var initialize = function(latitude, longitude, filter, house) {
+        //
+        //     // Uses the selected latitude, longitude as starting point
+        //     var myLatLng = {latitude: parseFloat(latitude), longitude: parseFloat(longitude)};
+        //
+        //     // If map has not been created...
+        //     // if (!map){
+        //         // Create a new map and place in the index.html page
+        //         var map = new google.maps.Map(document.getElementById('map-' + house._id), {
+        //             zoom: 16,
+        //             center: myLatLng
+        //         });
+        //     // }
+        //
+        //     // Blue dott
+        //     icon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+        //
+        //     // Loop through each location in the array and place a marker
+        //     locations.forEach(function(n, i){
+        //         var marker = new google.maps.Marker({
+        //             position: n.latlon,
+        //             map: map,
+        //             title: "Big Map",
+        //             icon: icon,
+        //         });
+        //
+        //         // For each marker created, add a listener that checks for clicks
+        //         google.maps.event.addListener(marker, 'click', function(e){
+        //             // When clicked, open the selected marker's message
+        //             currentSelectedMarker = n;
+        //             n.message.open(map, marker);
+        //         });
+        //     });
+        //
+        //     // Function for moving to a selected location
+        //     map.panTo(new google.maps.LatLng(latitude, longitude));
+        // };
 
         googleMapService.fGeocode = function(address, callback) {
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode( { "address": address }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK && results.length > 0) {
                     var location = results[0].geometry.location,
-                        lat      = location.lat(),
-                        lng      = location.lng();
+                        latitude      = location.lat(),
+                        longitude      = location.lng();
 
-                    return callback([lng, lat]); // Long, Lat
+                    return callback([longitude, latitude]); // Longitude, Latitude
 
                 }
             });
@@ -193,17 +175,26 @@ angular.module('gservice', [])
             var latlng = new google.maps.LatLng(latitude, longitude);
             geocoder.geocode( { "latLng": latlng }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK && results.length > 0) {
+                    var streetNumber, streetName;
+                    if(results[0].address_components[0].short_name) streetNumber = results[0].address_components[0].short_name;
+                    if(results[0].address_components[1].short_name) streetName = results[0].address_components[1].short_name;
+
                     if(results[0].formatted_address.split(', ')[2]) {
+                        // console.log(results[0]);
                         var location = results[0].formatted_address.split(', '),
-                            street = location[0],
+                            // street = location[0],
                             city = location[1],
                             state = location[2].split(' ')[0],
                             zip = location[2].split(' ')[1];
                         return callback({
-                            street: street,
-                            city: city,
-                            state: state,
-                            zip: zip
+                            name: results[0].formatted_address,
+                            address: {
+                                streetNumber: streetNumber,
+                                streetName: streetName,
+                                city: city,
+                                state: state,
+                                zip: zip
+                            }
                         });
                     }
                 }

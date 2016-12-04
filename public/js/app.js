@@ -1,6 +1,6 @@
 // Declares the initial angular module "meanMapApp". Module grabs other controllers and services.
 var app = angular.module('xmasMapApp', ['ngAnimate', 'mainCtrl', 'addCtrl', 'queryCtrl', 'geolocation', 'gservice', 'AuthService', 'ngRoute',
-    'rating', 'headroom', 'bootstrap.fileField','angularReverseGeocode', 'ui.bootstrap'])
+    'rating', 'headroom', 'bootstrap.fileField','angularReverseGeocode', 'ui.bootstrap', 'vsGoogleAutocomplete', 'infinite-scroll'])
     // Configures Angular routing -- showing the relevant view and controller when needed.
     .config(function($routeProvider) {
 

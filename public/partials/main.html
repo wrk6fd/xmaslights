@@ -1,127 +1,156 @@
 <header headroom>
     <nav class="navbar navbar-fixed-top">
 
-        <button class="red-bg xbtn" ng-click="toggleFilter()">Filter</button>
-        <button ng-show="isLoggedIn" id="newHouseBtn" class="red-bg xbtn" ng-click="toggleCollapse(true)">New House</button>
-        <!--<button class="red-bg xbtn">Set My Location</button>-->
-        <button ng-show="!isLoggedIn" uib-popover-template="registrationPopover.templateUrl" popover-title="Register an Account"
-                popover-placement="bottom-right" popover-is-open="registerIsOpen" popover-trigger="'outsideClick'"
-                type="button" class="red-bg xbtn">Register</button>
 
-        <script type="text/ng-template" id="registration.html">
-            <div class="col-md-12 popover-background">
-                <p>Make an account to add houses and comment on your favorite houses</p>
-                <div ng-show="error.register" class="alert alert-danger">{{error.register}}</div>
-                <hr>
-                <div class="registration-form">
-                    <div class="form-group">
-                        <label for="register-username">Username</label>
-                        <input id="register-username" ng-keypress="checkIfEnterKeyWasPressed($event)" type="text" class="form-control" name="username" ng-model="registerForm.username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-password">Password</label>
-                        <input id="register-password" ng-keypress="checkIfEnterKeyWasPressed($event)" type="password" class="form-control" name="password" ng-model="registerForm.password" required>
-                    </div>
-                    <div class="popover-buttons">
-                        <button ng-click="register()" class="blue-bg xbtn">Register</button>
-                        <button ng-click="cancelRegistration()" class="blue-bg xbtn" >Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </script>
-        <button ng-show="!isLoggedIn" uib-popover-template="loginPopover.templateUrl" popover-title="Login to your account"
-                popover-placement="bottom-right" popover-is-open="loginIsOpen" popover-trigger="'outsideClick'"
-                type="button" class="red-bg xbtn">Login</button>
-
-        <script type="text/ng-template" id="login.html">
-            <div class="col-md-12 popover-background">
-                <div ng-show="error.login" class="alert alert-danger">{{error.login}}</div>
-                <div class="registration-form">
-                    <div class="form-group">
-                        <label for="login-username">Username</label>
-                        <input id="login-username" ng-keypress="checkIfEnterKeyWasPressed($event)" type="text" class="form-control" name="username" ng-model="loginForm.username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input id="login-password" ng-keypress="checkIfEnterKeyWasPressed($event)" type="password" class="form-control" name="password" ng-model="loginForm.password" required>
-                    </div>
-                    <div class="popover-buttons">
-                        <button ng-click="login()" class="blue-bg xbtn">Login</button>
-                        <button ng-click="cancelLogin()" class="blue-bg xbtn" >Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </script>
-
-        <!--<div class="currentUser" ng-show="isLoggedIn && currentUser">{{currentUser}}</div>-->
-        <div class="btn-group" ng-show="isLoggedIn && currentUser" uib-dropdown is-open="status.isopen" keyboard-nav="true">
-            <button id="single-button" type="button" class="red-bg xbtn" uib-dropdown-toggle ng-disabled="disabled">
-                {{currentUser}} <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
-                <li role="menuitem"><a href="#">Logout</a></li>
-            </ul>
+        <div class="left-buttons">
+            <button class="red-bg xbtn filter-button" ng-click="toggleFilter()">Filter & Sort</button>
+            <button ng-show="isLoggedIn" id="newHouseBtn" class="red-bg xbtn" ng-click="toggleCollapse(true)">New House</button>
         </div>
-        <!--<button class="red-bg xbtn"></button>-->
+        <!--<button class="red-bg xbtn">Set My Location</button>-->
+        <div class="right-buttons">
+            <button ng-show="!isLoggedIn" uib-popover-template="registrationPopover.templateUrl" popover-title="Register an Account"
+                    popover-placement="bottom-right" popover-is-open="registerIsOpen" popover-trigger="'outsideClick'"
+                    type="button" class="red-bg xbtn">Register</button>
+
+            <script type="text/ng-template" id="registration.html">
+                <div class="col-md-12 popover-background">
+                    <p>Make an account to add houses and comment on your favorite houses</p>
+                    <div ng-show="error.register" class="alert alert-danger">{{error.register}}</div>
+                    <hr>
+                    <div class="registration-form">
+                        <div class="form-group">
+                            <label for="register-username">Username</label>
+                            <input id="register-username" ng-keypress="checkIfEnterKeyWasPressed($event)" type="text" class="form-control" name="username" ng-model="registerForm.username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <input id="register-password" ng-keypress="checkIfEnterKeyWasPressed($event)" type="password" class="form-control" name="password" ng-model="registerForm.password" required>
+                        </div>
+                        <div class="popover-buttons">
+                            <button ng-click="register()" class="blue-bg xbtn">Register</button>
+                            <button ng-click="cancelRegistration()" class="blue-bg xbtn" >Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </script>
+            <button ng-show="!isLoggedIn" uib-popover-template="loginPopover.templateUrl" popover-title="Login to your account"
+                    popover-placement="bottom-right" popover-is-open="loginIsOpen" popover-trigger="'outsideClick'"
+                    type="button" class="red-bg xbtn">Login</button>
+
+            <script type="text/ng-template" id="login.html">
+                <div class="col-md-12 popover-background">
+                    <div ng-show="error.login" class="alert alert-danger">{{error.login}}</div>
+                    <div class="registration-form">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <input id="login-username" ng-keypress="checkIfEnterKeyWasPressed($event)" type="text" class="form-control" name="username" ng-model="loginForm.username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input id="login-password" ng-keypress="checkIfEnterKeyWasPressed($event)" type="password" class="form-control" name="password" ng-model="loginForm.password" required>
+                        </div>
+                        <div class="popover-buttons">
+                            <button ng-click="login()" class="blue-bg xbtn">Login</button>
+                            <button ng-click="cancelLogin()" class="blue-bg xbtn" >Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </script>
+
+            <!--<div class="currentUser" ng-show="isLoggedIn && currentUser">{{currentUser}}</div>-->
+            <div class="btn-group" ng-show="isLoggedIn && currentUser" uib-dropdown is-open="status.isopen" keyboard-nav="true">
+                <button id="single-button" type="button" class="red-bg xbtn" uib-dropdown-toggle ng-disabled="disabled">
+                    {{currentUser}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                    <li role="menuitem"><a href="#">Logout</a></li>
+                </ul>
+            </div>
+            <!--<button class="red-bg xbtn"></button>-->
+        </div>
+
     </nav>
     <div class="nav-collapse" uib-collapse="filterCollapse" id="filter">
         <div class="filter col-md-12">
-            <div class="col-md-offset-2 col-md-2 left-form">
+            <div class="col-md-offset-3 col-md-2 left-form">
                 <div class="form-group col-md-12">
-                    <label>Rating</label>
+                    <label class="filter-label rating-label"><i class="light-blue fa fa-snowflake-o"></i> Rating</label>
                     <ul class="filter-rating">
                         <li>
                             <label>
-                                <input ng-model="filter.snow5" type="checkbox">5 Snowflakes
+                                <input ng-model="filter.snow5" ng-true-value="5" ng-false-value="" type="checkbox">5 Snowflakes
                             </label>
                         </li>
                         <li>
                             <label>
-                                <input ng-model="filter.snow4" type="checkbox">4 Snowflakes
+                                <input ng-model="filter.snow4" ng-true-value="4" ng-false-value="" type="checkbox">4 Snowflakes
                             </label>
                         </li>
                         <li>
                             <label>
-                                <input ng-model="filter.snow3" type="checkbox">3 Snowflakes
+                                <input ng-model="filter.snow3" ng-true-value="3" ng-false-value="" type="checkbox">3 Snowflakes
                             </label>
                         </li>
                         <li>
                             <label>
-                                <input ng-model="filter.snow2" type="checkbox">2 Snowflakes
+                                <input ng-model="filter.snow2" ng-true-value="2" ng-false-value="" type="checkbox">2 Snowflakes
                             </label>
                         </li>
                         <li>
                             <label>
-                                <input ng-model="filter.snow1" type="checkbox">1 Snowflake
+                                <input ng-model="filter.snow1" ng-true-value="1" ng-false-value="" type="checkbox">1 Snowflake
                             </label>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="col-md-3 middle-form">
+            <div class="col-md-4 right-form">
                 <div class="form-group col-md-12">
-                    <label for="filter-street">Street</label>
-                    <input class="form-control" id="filter-street"  type="text" ng-model="filter.address.street">
+                    <label class="filter-label" for="filter-address">Address</label>
+                    <input vs-google-autocomplete
+
+                           ng-model="filter.name"
+                           vs-street-number="filter.streetNumber"
+                           vs-street="filter.streetName"
+                           vs-city="filter.city"
+                           vs-state="filter.state"
+                           vs-post-code="filter.zip"
+                           vs-latitude="filter.location.latitude"
+                           vs-longitude="filter.location.longitude"
+
+                           type="text"
+                           name="address"
+                           id="filter-address"
+                           class="form-control"
+                           placeholder=" ">
                 </div>
+                <!--<div>{{filter.name}}</div>-->
                 <div class="form-group col-md-12">
-                    <label for="filter-city">City</label>
-                    <input class="form-control" id="filter-city"  type="text" ng-model="filter.address.city">
-                </div>
-                <div class="form-group col-md-12">
-                    <label for="filter-state">State</label>
-                    <input class="form-control" id="filter-state"  type="text" ng-model="filter.address.state">
-                </div>
-                <div class="form-group col-md-12">
-                    <label for="filter-zip">Zip Code</label>
-                    <input class="form-control" id="filter-zip"  type="text" ng-model="filter.address.zip">
-                </div>
-            </div>
-            <div class="col-md-3 right-form">
-                <div class="form-group col-md-12">
-                    <label for="filter-distance">Distance (miles)</label>
+                    <label class="filter-label" for="filter-distance">Distance (miles)</label>
                     <input class="form-control" type="number" id="filter-distance" ng-model="filter.distance">
                 </div>
+
+                <div class="form-group col-md-9">
+                    <label class="filter-label">Sort By: </label>
+                    <div class="btn-group">
+                        <label>
+                            <input type="radio" ng-model="filter.sort" value="dist"> Distance (Near to Far)
+                        </label>
+                        <label>
+                            <input type="radio" ng-model="filter.sort" value="rateHL"> Ratings (High to Low)
+                        </label>
+                        <label>
+                            <input type="radio" ng-model="filter.sort" value="rateLH"> Ratings (Low to High)
+                        </label>
+                    </div>
+                </div>
+
             </div>
+            <div class="filter-buttons col-md-8 col-md-offset-2">
+                <button class="blue-bg xbtn" ng-click="filterResults()">Update Results</button>
+                <button class="blue-bg xbtn" ng-click="cancelFilter()">Cancel</button>
+            </div>
+
             
         </div>
     </div>
@@ -144,20 +173,23 @@
                 </div>
                 <div class="col-md-6 new-address-form">
                     <div class="form-group col-md-12">
-                        <label for="new-street-input">Street</label>
-                        <input class="form-control" id="new-street-input"  type="text" ng-model="newHouse.address.street">
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="city-input">City</label>
-                        <input class="form-control" id="city-input"  type="text" ng-model="newHouse.address.city">
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="state-input">State</label>
-                        <input class="form-control" id="state-input"  type="text" ng-model="newHouse.address.state">
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label for="zip-input">Zip Code</label>
-                        <input class="form-control" id="zip-input"  type="text" ng-model="newHouse.address.zip">
+                        <label for="new-house-address">Address</label>
+                        <input vs-google-autocomplete
+
+                               ng-model="newHouse.name"
+                               vs-street-number="newHouse.address.streetNumber"
+                               vs-street="newHouse.address.streetName"
+                               vs-city="newHouse.address.city"
+                               vs-state="newHouse.address.state"
+                               vs-post-code="newHouse.address.zip"
+                               vs-latitude="newHouse.latitude"
+                               vs-longitude="newHouse.longitude"
+
+                               type="text"
+                               name="address"
+                               id="new-house-address"
+                               class="form-control"
+                               placeholder=" ">
                     </div>
                     <div class="form-group col-md-12">
                         <label>Rating</label>
@@ -189,39 +221,19 @@
         </div>
         <div class="box-footer">
             <div class="show-comments">
-                <!--<button class="no-btn" ng-click="toggleComment(house)"><i class="fa fa-comment" aria-hidden="true"></i></button>-->
                 <button ng-show="house.comments.length || isLoggedIn" class="no-btn" ng-click="toggleComment(house)"><i class="fa fa-comment" aria-hidden="true"></i></button>
             </div>
-            <!--<div class="address-container" >-->
-                <!--<button class="no-btn"><i class="fa fa-location-arrow" aria-hidden="true"></i></button>-->
-                <!--<div class="address">-->
-                    <!--<div class="street">-->
-                        <!--{{house.address.street}}-->
-                    <!--</div>-->
-                    <!--<div class="city-state-zip">-->
-                        <!--{{house.address.city}}, {{house.address.state}} {{house.address.zip}}-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <div class="address-container" uib-popover-template="mapPopover.templateUrl" popover-title="{{house.address.street}}"
-                 popover-placement="top" popover-is-open="mapIsOpen[house._id]" popover-class="map-popover" popover-trigger="'outsideClick'">
+            <div class="address-container" ng-click="showMap(house)">
                 <button class="no-btn"><i class="fa fa-location-arrow" aria-hidden="true"></i></button>
                 <div class="address">
                     <div class="street">
-                        {{house.address.street}}
+                        {{house.address.streetNumber}} {{house.address.streetName}}
                     </div>
                     <div class="city-state-zip">
                         {{house.address.city}}, {{house.address.state}} {{house.address.zip}}
                     </div>
                 </div>
             </div>
-
-
-            <script type="text/ng-template" id="showMap.html">
-                <div class="col-md-12 popover-background">
-                    <h1 class="map">Map goes here</h1>
-                </div>
-            </script>
         </div>
         <div class="collapse" uib-collapse="commentCollapse[house._id]" id="commentBox">
             <div class="comment-box">
@@ -234,8 +246,7 @@
                         </div>
                     </div>
                 </div>
-                <!--<div class="new-comment" ng-show="isLoggedIn && currentUser">-->
-                <div class="new-comment">
+                <div class="new-comment" ng-show="isLoggedIn && currentUser">
                     <textarea ng-keypress="enterPostComment($event,house)" name="comment-body" placeholder="Write a comment" id="comment-body-{{house._id}}" class="comment-body" ng-model="house.comment.text"
                               cols="30" rows="5"></textarea>
                     <div class="save-comment">
@@ -246,6 +257,11 @@
                 </div>
             </div>
         </div>
+        <div class="collapse" uib-collapse="mapCollapse[house._id]">
+            <div class="col-md-12 popover-background">
+                <div class="right-panel" id="map-right-panel-{{house._id}}"></div>
+                <div class="map" id="map-{{house._id}}"></div>
+            </div>
+        </div>
     </div>
-    <div id="map"></div>
 </div>
