@@ -1,6 +1,6 @@
 // Creates the mainCtrl Module and Controller. Note that it depends on the 'geolocation' module and service.
-var mainCtrl = angular.module('mainCtrl', ['geolocation', 'gservice', 'AuthService']);
-mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $timeout, geolocation, gservice, AuthService){
+var mainCtrl = angular.module('mainCtrl', ['geolocation', 'gservice', 'AuthService', 'toastr']);
+mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $timeout, geolocation, gservice, AuthService, toastr){
 
     // Initializes Variables
     // ----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     var longitude = 0;
 
     $scope.starRating1 = 4;
-    $scope.ratingMsg = [];
+    $scope.ratingMsg = {};
 
     $scope.geoBased = true;
 
@@ -133,9 +133,12 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         snow4: '',
         snow3: '',
         snow2: '',
-        snow1: '',
-        sort: 'dist'
+        snow1: ''
     };
+
+    $scope.directions = {};
+
+    $scope.sortBy = 1;
 
 
     $scope.$watch( AuthService.isLoggedIn, function ( isLoggedIn ) {
@@ -157,7 +160,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     var queryBody = {};
     var lastQuery = [];
     $scope.filterResults = function() {
-        console.log($scope.filter);
+        // console.log($scope.filter);
         queryBody = {
             address: {
                 streetNumber: $scope.filter.streetNumber,
@@ -172,8 +175,21 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             rating4: $scope.filter.snow4,
             rating3: $scope.filter.snow3,
             rating2: $scope.filter.snow2,
-            rating1: $scope.filter.snow1
+            rating1: $scope.filter.snow1,
+            sortBy: $scope.sortBy
         };
+
+        if(!queryBody.distance) {
+            queryBody.distance = 50;
+        }
+
+        if(queryBody.sortBy === 1 && !queryBody.location) {
+            // queryBody.location = $scope.myLocation.location;
+            queryBody.location = {};
+            queryBody.location.longitude = $scope.myLocation.longitude;
+            queryBody.location.latitude = $scope.myLocation.latitude;
+
+        }
 
         // Post the queryBody to the /query POST route to retrieve the filtered results
         $http.post('/query', queryBody)
@@ -182,10 +198,10 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             .success(function(queryResults){
 
                 // Query Body and Result Logging
-                console.log("QueryBody:");
-                console.log(queryBody);
-                console.log("QueryResults:");
-                console.log(queryResults);
+                // console.log("QueryBody:");
+                // console.log(queryBody);
+                // console.log("QueryResults:");
+                // console.log(queryResults);
 
                 lastQuery = queryResults;
 
@@ -193,6 +209,11 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
                 // Count the number of records retrieved for the panel-footer
                 $scope.queryCount = queryResults.length;
+
+                $scope.houses = [];
+                $scope.houses = queryResults;
+                // toastr.info('Houses updated!');
+                $scope.toggleFilter();
             })
             .error(function(queryResults){
                 console.log('Error ' + queryResults);
@@ -221,15 +242,17 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             AuthService.register($scope.registerForm.username, $scope.registerForm.password)
             // handle success
                 .then(function () {
-                    $scope.loginForm.username = $scope.registerForm.username;
-                    $scope.loginForm.password = $scope.registerForm.password;
-                    $scope.login();
+                    // $scope.loginForm.username = $scope.registerForm.username;
+                    // $scope.loginForm.password = $scope.registerForm.password;
+                    toastr.success('Your account has been created!');
+                    $scope.login($scope.registerForm.username, $scope.registerForm.password);
                     $scope.cancelRegistration();
                     //login and success message toastr
                 })
                 // handle error
                 .catch(function () {
                     $scope.error.register = 'We can\'t register you right now. Try again in a little while';
+                    toastr.error('One of our light bulbs burnt out. We\'ll get another one as quick as possible');
                 });
         }
 
@@ -243,9 +266,11 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
 
     $scope.login = function (un,pw) {
+        var message = 'Welcome back, ';
         var username = $scope.loginForm.username;
         var password = $scope.loginForm.password;
         if(un && pw) {
+            message = 'Welcome, ';
             username = un;
             password = pw;
         }
@@ -259,7 +284,8 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             // handle success
                 .then(function () {
                     $scope.cancelLogin();
-                    console.log('successfully logged in');
+                    toastr.info(message + username + '!');
+                    // console.log('successfully logged in');
                 })
                 // handle error
                 .catch(function () {
@@ -276,11 +302,16 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         $scope.error.login = '';
     };
 
+    $scope.logout = function() {
+        AuthService.logout();
+    };
+
     $scope.toggleFilter = function() {
         $scope.filterCollapse = !$scope.filterCollapse;
         if(!$scope.filterCollapse) {
             $scope.filter = $scope.myLocation;
-            $scope.filter.distance = 10;
+            // $scope.filter.distance = 10;
+            // $scope.sortBy = 1;
             setTimeout(function() {
                 focus('filter-address');
             }, 1000);
@@ -302,8 +333,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                 snow4: '',
                 snow3: '',
                 snow2: '',
-                snow1: '',
-                sort: 'dist'
+                snow1: ''
             };
         }
     };
@@ -322,19 +352,20 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         $scope.houses[index].ratings.push(rating);
         $scope.houses[index].avgRating = _.round(_.mean($scope.houses[index].ratings),1);
 
-        $scope.ratingMsg[index] = 'Thanks for the ' + rating + ' snowflake rating!';
+        $scope.ratingMsg[house_id] = 'Thanks for the ' + rating + ' snowflake rating!';
         setTimeout(function() {
-            $scope.ratingMsg[index] = 'Average Rating: ' + $scope.houses[index].avgRating + ' Snowflakes';
+            $scope.ratingMsg[house_id] = 'Average Rating: ' + $scope.houses[index].avgRating + ' Snowflakes';
         }, 6000);
 
         // save house
         $http.put('/houses', $scope.houses[index])
             .success(function(data) {
-                console.log('Rated!');
-                // toastr
+                // console.log('Rated!');
+                toastr.success('Thanks for the rating!');
             })
             .error(function(data) {
-                console.error(data);
+                // console.error(data);
+                toastr.error('One of our light bulbs burnt out. We\'ll get another one as quick as possible');
                 //toastr or or handleError
             });
     };
@@ -349,7 +380,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     $scope.getHousesUrl = function() {
         if($scope.myLocation) {
-            console.log('using my location', $scope.myLocation);
+            // console.log('using my location', $scope.myLocation);
             return $http.get('/houses', { params: { latitude: $scope.myLocation.latitude, longitude: $scope.myLocation.longitude } });
         } else {
             return $http.get('/houses');
@@ -372,12 +403,13 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                         time: ''
                     };
                     $scope.houses[i].avgRating = _.round(_.mean($scope.houses[i].ratings),1);
-                    $scope.ratingMsg[i] = 'Average Rating: ' + ($scope.houses[i].avgRating || 0) + ' Snowflakes';
+                    $scope.ratingMsg[$scope.houses[i]._id] = 'Average Rating: ' + ($scope.houses[i].avgRating || 0) + ' Snowflakes';
                     $scope.mapCollapse[$scope.houses[i]._id] = true;
+                    $scope.directions[$scope.houses[i]._id] = false;
                 }
             })
             .error(function(data) {
-               console.error(data);
+               toastr.error('We can\'t find the light switch right now. Don\'t worry, we\'ll find it soon!')
             });
     };
 
@@ -402,21 +434,21 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
                 $scope.newHouse.pictures = [];
                 $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
-                console.log('adding house: ',$scope.newHouse);
+
                 $http.post('/houses', $scope.newHouse)
                     .success(function(data) {
-                        console.log('added house to db: ',data);
                         $scope.upload(uniqueFileName, data, true);
                     })
                     .error(function(data) {
-                        console.error(data);
+                        toastr.error('Something\'s not quite right. Try again later');
                     });
 
             // });
 
 
         } else {
-            $scope.error.file = 'Don\'t forget to upload a picture to share'
+            $scope.error.file = 'Don\'t forget to upload a picture to share';
+            toastr.error($scope.error.file);
         }
     };
 
@@ -434,7 +466,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             var fileSize = Math.round(parseInt($scope.file.size));
             if (fileSize > $scope.sizeLimit) {
                 // toastr.error('Sorry, your attachment is too big. <br/> Maximum '  + $scope.fileSizeLabel() + ' file attachment allowed','File Too Large');
-                console.error('Sorry, your attachment is too big.','File Too Large');
+                toastr.error('Sorry, your picture is too big. Try a smaller one','Picture Larger than 30MB');
                 return false;
             }
             // Prepend Unique String To Prevent Overwrites
@@ -446,21 +478,19 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             bucket.putObject(params, function(err, data) {
                 if(err) {
                     // delete failure_house._id
-                    console.error(err.message, err.code);
-                    // toastr.error(err.message,err.code);
+                    toastr.error('Something\'s not quite right. Try again later');
                     return false;
                 }
                 else {
                     if(newHouse) {
                         // Upload Successfully Finished
                         // toastr.success('File Uploaded Successfully', 'Done');
-                        console.log('Successfully Added New House: ', house);
                         $scope.houses.push(house);
                         $scope.commentCollapse[house._id] = true;
                         $scope.mapCollapse[house._id] = true;
                         $scope.newHouseCollapse = true;
-                        console.log('new house collapsed');
                         $scope.newHouse = $scope.myLocation;
+                        toastr.success('New house added!');
                     }
                     $scope.file = null;
                 }
@@ -468,8 +498,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         }
         else {
             // No File Selected
-            // toastr.error('Please select a file to upload');
-            console.error('Please select a file to upload');
+            toastr.error('Please select a picture to upload');
         }
     };
 
@@ -496,7 +525,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
 
             gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(geoLocation){
-                console.log(geoLocation);
                 $scope.myLocation.address = geoLocation.address;
                 $scope.myLocation.name = geoLocation.name;
 
@@ -517,11 +545,21 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
     $scope.setMyLocation(true);
 
-    $scope.showMap = function(house) {
-        $scope.mapCollapse[house._id] = !$scope.mapCollapse[house._id];
-        console.log(house, $scope.myLocation);
-        gservice.mapAddress(house, $scope.myLocation);
+    $scope.showMap = function(house, directions) {
+        if(!directions) {
+            $scope.mapCollapse[house._id] = !$scope.mapCollapse[house._id];
+        }
+        gservice.mapAddress(house, $scope.myLocation, directions);
         // gservice.refresh(house.location[1], house.location[0], null, house);
+    };
+
+    $scope.getDirections = function(house) {
+        if(!$scope.myLocation) {
+            toastr.warning('Set your location so we can give you directions');
+        } else if($scope.myLocation) {
+            $scope.directions[house._id] = true;
+            $scope.showMap(house, true);
+        }
     };
 
     $scope.toggleComment = function(house) {
@@ -544,7 +582,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     // }],
     $scope.enterPostComment = function($event, house) {
         var keyCode = $event.which || $event.keyCode;
-        console.log($event);
         if (keyCode === 13 && $event.shiftKey) {
             $event.stopPropagation();
             $scope.postComment(house);
@@ -560,12 +597,10 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             delete house.comment;
             $http.put('/houses', house)
                 .success(function(data) {
-                    console.log('New Comment Posted');
-                    //toastr
+                    toastr.success('Thanks for the comment!');
                 })
                 .error(function(data) {
-                    console.error(data);
-                    //toastr or handleError
+                    toastr.error('Something\'s not quite right. Try again later');
                 });
         }
     };

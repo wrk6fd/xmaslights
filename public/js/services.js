@@ -105,6 +105,7 @@ angular.module('AuthService', [])
                     .success(function (data) {
                         if(data.status){
                             user = true;
+                            loggedInAs = data.user;
                         } else {
                             user = false;
                         }

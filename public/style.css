@@ -129,6 +129,7 @@ body {
 .popover {
     background-color: rgb(74, 167, 167);
     color: #efefd4;
+    max-width: 400px;
 }
 .popover-title {
     background-color: rgb(55, 112, 112);
@@ -146,7 +147,7 @@ body {
 
 
 .blue-bg {
-    background-color: rgba(10, 0, 241, 0.63);
+    background-color: rgba(10, 0, 241, 0.75);
     /*background-color: #63dddd;*/
     /*text-shadow: 1px 1px 5px rgba(10, 0, 241, 0.63);*/
 }
@@ -502,8 +503,8 @@ button.no-btn:active {
     display: block;
 }
 
-.right-panel {
-    font-family: 'Roboto','sans-serif';
+.right-panel, .right-panel-button {
+    /*font-family: 'Roboto','sans-serif';*/
     line-height: 30px;
     padding-left: 10px;
 }
@@ -527,6 +528,23 @@ button.no-btn:active {
     overflow-y: scroll;
     overflow-x: auto;
 }
+
+.right-panel-button {
+    position: absolute;
+    right: 5%;
+    z-index: 1000;
+    top: 2%;
+}
+
+.no-panel {
+    display: none;
+}
+
 .map {
     margin-right: 40%;
+}
+.map-wide {
+    width: 98%;
+    margin-right: auto;
+    margin-left: auto;
 }

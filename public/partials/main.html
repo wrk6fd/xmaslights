@@ -8,9 +8,9 @@
         </div>
         <!--<button class="red-bg xbtn">Set My Location</button>-->
         <div class="right-buttons">
-            <button ng-show="!isLoggedIn" uib-popover-template="registrationPopover.templateUrl" popover-title="Register an Account"
+            <button ng-show="!isLoggedIn" uib-popover-template="registrationPopover.templateUrl" popover-title="Create an Account"
                     popover-placement="bottom-right" popover-is-open="registerIsOpen" popover-trigger="'outsideClick'"
-                    type="button" class="red-bg xbtn">Register</button>
+                    type="button" class="red-bg xbtn">Create Account</button>
 
             <script type="text/ng-template" id="registration.html">
                 <div class="col-md-12 popover-background">
@@ -27,7 +27,7 @@
                             <input id="register-password" ng-keypress="checkIfEnterKeyWasPressed($event)" type="password" class="form-control" name="password" ng-model="registerForm.password" required>
                         </div>
                         <div class="popover-buttons">
-                            <button ng-click="register()" class="blue-bg xbtn">Register</button>
+                            <button ng-click="register()" class="blue-bg xbtn">Create Account</button>
                             <button ng-click="cancelRegistration()" class="blue-bg xbtn" >Cancel</button>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
                     {{currentUser}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
-                    <li role="menuitem"><a href="#">Logout</a></li>
+                    <li role="menuitem"><a href ng-click="logout()">Logout</a></li>
                 </ul>
             </div>
             <!--<button class="red-bg xbtn"></button>-->
@@ -134,13 +134,13 @@
                     <label class="filter-label">Sort By: </label>
                     <div class="btn-group">
                         <label>
-                            <input type="radio" ng-model="filter.sort" value="dist"> Distance (Near to Far)
+                            <input type="radio" ng-model="sortBy" ng-value="1"> Distance (Near to Far)
                         </label>
                         <label>
-                            <input type="radio" ng-model="filter.sort" value="rateHL"> Ratings (High to Low)
+                            <input type="radio" ng-model="sortBy" ng-value="2"> Ratings (High to Low)
                         </label>
                         <label>
-                            <input type="radio" ng-model="filter.sort" value="rateLH"> Ratings (Low to High)
+                            <input type="radio" ng-model="sortBy" ng-value="3"> Ratings (Low to High)
                         </label>
                     </div>
                 </div>
@@ -208,7 +208,7 @@
     <div class="box" ng-repeat="house in houses track by $index"><!-- repeat for each house in db-->
         <div class="box-header">
             <div style="margin-top: -5px;" house-rating rating="house.avgRating" read-only="false" max-rating="5" click="addRating(house._id,param)"
-                 uib-tooltip="{{ratingMsg[$index]}}">
+                 uib-tooltip="{{ratingMsg[house._id]}}">
             </div>
         </div>
         <div class="box-body">
@@ -259,8 +259,11 @@
         </div>
         <div class="collapse" uib-collapse="mapCollapse[house._id]">
             <div class="col-md-12 popover-background">
-                <div class="right-panel" id="map-right-panel-{{house._id}}"></div>
-                <div class="map" id="map-{{house._id}}"></div>
+                <div ng-show="directions[house._id]" class="right-panel" id="map-right-panel-{{house._id}}"></div>
+                <div class="right-panel-button" style="text-align: center;" ng-class="{ 'no-panel': directions[house._id] }">
+                    <button ng-show="!directions[house._id]" ng-click="getDirections(house)" class="xbtn blue-bg">Get Directions</button>
+                </div>
+                <div class="map" ng-class="{ 'map-wide': !directions[house._id] }" id="map-{{house._id}}"></div>
             </div>
         </div>
     </div>

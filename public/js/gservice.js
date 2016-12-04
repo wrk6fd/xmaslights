@@ -17,7 +17,7 @@ angular.module('gservice', [])
         // -------------------------------------------------------------
         // Service our factory will return
 
-        googleMapService.mapAddress = function(house, myLocation) {
+        googleMapService.mapAddress = function(house, myLocation, directions) {
             var geocoder = new google.maps.Geocoder();
             var directionsDisplay = new google.maps.DirectionsRenderer;
             var directionsService = new google.maps.DirectionsService;
@@ -34,21 +34,24 @@ angular.module('gservice', [])
                     };
 
                     var map = new google.maps.Map(document.getElementById('map-' + house._id), mapOptions);
-                    var marker = new google.maps.Marker({
-                        map: map,
-                        position: results[0].geometry.location
-                    });
 
-                    if(mapped[house._id] !== myLocation) {
-
-                        mapped[house._id] = myLocation;
-                        console.log(mapped);
-
+                    if(directions) {
                         directionsDisplay.setMap(map);
-                        directionsDisplay.setPanel(null);
-                        directionsDisplay.setPanel(document.getElementById('map-right-panel-' + house._id));
+                        if(mapped[house._id] !== myLocation) {
 
+                            mapped[house._id] = myLocation;
+                            // console.log(mapped);
+
+                            directionsDisplay.setPanel(null);
+                            directionsDisplay.setPanel(document.getElementById('map-right-panel-' + house._id));
+
+                        }
                         getDirections(directionsService, directionsDisplay, address, myLocation.name);
+                    } else {
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location
+                        });
                     }
                 } else {
                     console.log(status);

@@ -3,6 +3,7 @@ var mongoose        = require('mongoose');
 var House            = require('./house');
 var User            = require('./user');
 var passport        = require('passport');
+var _                = require('lodash');
 //https://www.hacksparrow.com/the-mongodb-tutorial.html
 //http://mongoosejs.com/docs/2.7.x/docs/query.html
 //http://mongoosejs.com/docs/queries.html
@@ -15,31 +16,31 @@ module.exports = function(app) {
     // --------------------------------------------------------
     // Retrieve records for all users in the db
     app.get('/houses', function(req, res){
-        console.log(req.query);
+        // console.log(req.query);
 
         var latitude, longitude;
 
         // Uses Mongoose schema to run the search (empty conditions)
         var query = House.find({});
-        console.log('connecting to mongodb');
+        // console.log('connecting to mongodb');
 
         if(req.query) {
             latitude = parseFloat(req.query.latitude);
             longitude = parseFloat(req.query.longitude);
 
-            console.log(longitude, latitude);
+            // console.log(longitude, latitude);
 
             query = query.where('location').near({ center: {type: 'Point', coordinates: [longitude, latitude]},
                 spherical: true});
         }
 
         query.exec(function(err, houses){
-            console.log('still connecting...');
+            // console.log('still connecting...');
             if(err) {
                 console.log(err);
                 res.send(err);
             }
-            console.log(houses);
+            // console.log(houses);
             // If no errors are found, it responds with a JSON of all users
             res.json(houses);
         });
@@ -52,7 +53,7 @@ module.exports = function(app) {
 
         // Creates a new House based on the Mongoose schema and the post body
         var newHouse = new House(req.body);
-        console.log(newHouse);
+        console.log('new house', newHouse);
 
         // New House is saved in the db.
         newHouse.save(function(err,house){
@@ -62,7 +63,7 @@ module.exports = function(app) {
             }
 
             // If no errors are found, it responds with a JSON of the new user
-            console.log('new house',house);
+            // console.log('new house',house);
             res.json(house);
         });
     });
@@ -115,6 +116,7 @@ module.exports = function(app) {
                         err: 'Could not log in user'
                     });
                 }
+                console.log(user, ' logged in');
                 var retUser = user;
                 retUser.hash = '';
                 retUser.salt = '';
@@ -141,7 +143,8 @@ module.exports = function(app) {
             });
         }
         res.status(200).json({
-            status: true
+            status: true,
+            user: req.user.username
         });
     });
 
@@ -184,6 +187,8 @@ module.exports = function(app) {
         var rating3         = req.body.rating3;
         var rating2         = req.body.rating2;
         var rating1         = req.body.rating1;
+
+        var sortBy          = req.body.sortBy;
         // var created_at      = req.body.created_at;
         // var updated_at      = req.body.updated_at;
 
@@ -256,8 +261,19 @@ module.exports = function(app) {
                 res.send(err);
             }
             console.log(houses);
+
+            var retHouses = houses;
+            if(sortBy === 2) {
+                retHouses = _.sortBy(houses, ['avgRating']).reverse();
+                console.log('sorted by high to low');
+            } else if(sortBy === 3) {
+                retHouses = _.sortBy(houses, ['avgRating']);
+                console.log('sorted by low to high');
+            }
+            // console.log('houses',retHouses);
+
             // If no errors, respond with a JSON of all users that meet the criteria
-            res.json(houses);
+            res.json(retHouses);
         });
     });
 };

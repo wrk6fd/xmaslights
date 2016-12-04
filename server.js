@@ -5,6 +5,7 @@ var mongoose        = require('mongoose');
 var port            = process.env.PORT || 3000;
 var morgan          = require('morgan');
 var bodyParser      = require('body-parser');
+var cookieParser    = require('cookie-parser');
 var methodOverride  = require('method-override');
 var app             = express();
 var passport = require('passport');
@@ -28,6 +29,14 @@ app.use(bodyParser.json());                                     // parse applica
 app.use(bodyParser.urlencoded({extended: true}));               // parse application/x-www-form-urlencoded
 app.use(bodyParser.text());                                     // allows bodyParser to look at raw text
 app.use(bodyParser.json({ type: 'application/vnd.api+json'}));  // parse application/vnd.api+json as json
+
+app.use(cookieParser());
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}));
+
 app.use(methodOverride());
 
 app.use(passport.initialize());
