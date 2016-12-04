@@ -177,6 +177,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     margin: 0 auto;
+    margin-bottom: 24px;
     /*    height: 480px;*/
     width: 75%;
 }
@@ -351,6 +352,7 @@ nav button {
     height: 483px;
     width: auto;
     overflow: hidden;
+    cursor: default;
 }
 .carousel-indicators {
     display: none;
