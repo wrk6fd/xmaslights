@@ -106,6 +106,12 @@ body {
     /*max-width: 960px;*/
 }
 
+.loading {
+    margin: 0 auto;
+    color: #93B849;
+    font-size: 56px;
+}
+
 .red {
     color: #A80030;
 }
@@ -183,7 +189,7 @@ body {
 }
 
 .container {
-    margin-top: 48px;
+    margin-top: 88px;
 }
 /**************NAV*****************/
 header {
@@ -191,7 +197,7 @@ header {
     left: 0;
     top: 0;
     width: 100%;
-    min-height: 50px;
+    min-height: 100px;
     z-index: 9999;
     background-color: #4AA7A7;
     background-image: -webkit-linear-gradient(rgba(74, 167, 167, 0.7), rgba(74, 167, 167, 0.7)), url(img/small_christmas_trees.png);
@@ -217,6 +223,31 @@ nav {
     padding-right: 24px;
 }
 
+.navbar {
+    min-height: 100px;
+}
+
+.logo {
+    font-family: 'Pacifico', cursive;
+    font-size: 32px;
+    height: 70px;
+    color: #A80030;
+    flex-grow: 1;
+    background: #DDDDC2;
+    background-image: -webkit-linear-gradient(to right, rgba(221, 221, 194, .9), rgba(221, 221, 194, .8),rgba(221, 221, 194, .1), rgba(221, 221, 194, 0)), url(img/Christmas-Lights-black.png);
+    background-image: linear-gradient(to right, rgba(221, 221, 194, .9), rgba(221, 221, 194, .8),rgba(221, 221, 194, .1), rgba(221, 221, 194, 0)), url(img/Christmas-Lights-black.png);
+    padding: 10px;
+    background-size: contain;
+    border-radius: 6px;
+    border: 3px solid;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1 ;
+}
+
 nav button {
     padding-right: 24px !important;
     padding-left: 24px !important;
@@ -235,7 +266,7 @@ nav button {
 .filter {
     color: #DDDDC2;
     font-size: 16px;
-    margin-top: 50px;
+    margin-top: 100px;
     padding: 12px;
 }
 

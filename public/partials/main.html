@@ -1,16 +1,14 @@
 <header headroom>
     <nav class="navbar navbar-fixed-top">
+        <div class="logo">Christagram</div>
 
-
-        <div class="left-buttons">
-            <button class="red-bg xbtn filter-button" ng-click="toggleFilter()">Filter & Sort</button>
-            <button ng-show="isLoggedIn" id="newHouseBtn" class="red-bg xbtn" ng-click="toggleCollapse(true)">New House</button>
-        </div>
-        <!--<button class="red-bg xbtn">Set My Location</button>-->
-        <div class="right-buttons">
+        <div class="nav-buttons">
+            <button class="red-bg xbtn filter-button" ng-click="toggleFilter()"><i class="fa fa-filter"></i> Filter & Sort</button>
+            <button ng-show="isLoggedIn" id="newHouseBtn" class="red-bg xbtn" ng-click="toggleCollapse(true)"><i class="fa fa-home"></i> New House</button>
+            <!--<button class="red-bg xbtn">Set My Location</button>-->
             <button ng-show="!isLoggedIn" uib-popover-template="registrationPopover.templateUrl" popover-title="Create an Account"
                     popover-placement="bottom-right" popover-is-open="registerIsOpen" popover-trigger="'outsideClick'"
-                    type="button" class="red-bg xbtn">Create Account</button>
+                    type="button" class="red-bg xbtn"><i class="fa fa-user-plus"></i> Create Account</button>
 
             <script type="text/ng-template" id="registration.html">
                 <div class="col-md-12 popover-background">
@@ -35,7 +33,7 @@
             </script>
             <button ng-show="!isLoggedIn" uib-popover-template="loginPopover.templateUrl" popover-title="Login to your account"
                     popover-placement="bottom-right" popover-is-open="loginIsOpen" popover-trigger="'outsideClick'"
-                    type="button" class="red-bg xbtn">Login</button>
+                    type="button" class="red-bg xbtn"><i class="fa fa-user"></i> Login</button>
 
             <script type="text/ng-template" id="login.html">
                 <div class="col-md-12 popover-background">
@@ -60,10 +58,11 @@
             <!--<div class="currentUser" ng-show="isLoggedIn && currentUser">{{currentUser}}</div>-->
             <div class="btn-group" ng-show="isLoggedIn && currentUser" uib-dropdown is-open="status.isopen" keyboard-nav="true">
                 <button id="single-button" type="button" class="red-bg xbtn" uib-dropdown-toggle ng-disabled="disabled">
-                    {{currentUser}} <span class="caret"></span>
+                    <i class="fa fa-user"></i> {{currentUser}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
-                    <li role="menuitem"><a href ng-click="logout()">Logout</a></li>
+                    <li role="menuitem"><a href ng-click="locationPopover()">Set My Location</a></li>
+                    <li role="menuitem"><a href ng-click="logout()"><i class="fa fa-sign-out"></i> Logout</a></li>
                 </ul>
             </div>
             <!--<button class="red-bg xbtn"></button>-->
@@ -147,7 +146,7 @@
 
             </div>
             <div class="filter-buttons col-md-8 col-md-offset-2">
-                <button class="blue-bg xbtn" ng-click="filterResults()">Update Results</button>
+                <button class="blue-bg xbtn" ng-click="getResults()">Update Results</button>
                 <button class="blue-bg xbtn" ng-click="cancelFilter()">Cancel</button>
             </div>
 
@@ -157,6 +156,7 @@
 </header>
 
 <div class="container">
+    <div class="loading" ng-show="loadingHouses"><i class="fa fa-tree fa-spin"></i></div>
     <div class="collapse" uib-collapse="newHouseCollapse" id="newHouse">
         <div class="box">
             <div class="box-header">
@@ -201,7 +201,7 @@
             </div>
             <div class="box-footer new-house">
                 <button class="red-bg xbtn" ng-click="addHouse()">Add House</button>
-                <button class="red-bg xbtn">Cancel</button>
+                <button class="red-bg xbtn" ng-click="cancelNewHouse()">Cancel</button>
             </div>
         </div>
     </div>

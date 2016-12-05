@@ -181,7 +181,7 @@ module.exports = function(app) {
         // var nickname        = req.body.nickname;
         var address         = req.body.address;
         // var tags            = req.body.tags;
-        // var rating          = req.body.rating;
+
         var rating5         = req.body.rating5;
         var rating4         = req.body.rating4;
         var rating3         = req.body.rating3;
@@ -212,26 +212,6 @@ module.exports = function(app) {
         // if(nickname){
         //     query = query.where('nickname').equals(nickname); // Regex?
         // }
-
-        // ...include filter by Address
-        // if(address){
-        //     if(address.streetNumber) {
-        //         query = query.where('address.streetNumber').equals(address.streetNumber); // Regex?
-        //     }
-        //     if(address.streetName) {
-        //         query = query.where('address.streetName').equals(address.streetName); // Regex?
-        //     }
-        //     if(address.city) {
-        //         query = query.where('address.city').equals(address.city); // Regex?
-        //     }
-        //     if(address.state) {
-        //         query = query.where('address.state').equals(address.state); // Regex?
-        //     }
-        //     if(address.zip) {
-        //         query = query.where('address.zip').equals(address.zip); // distance around zip?
-        //     }
-        // }
-
         // ...include filter by Tags
         // if(tags){
         //     query = query.where('tags').in(tags); // Regex

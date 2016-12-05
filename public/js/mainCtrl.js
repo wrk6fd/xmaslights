@@ -1,6 +1,6 @@
 // Creates the mainCtrl Module and Controller. Note that it depends on the 'geolocation' module and service.
 var mainCtrl = angular.module('mainCtrl', ['geolocation', 'gservice', 'AuthService', 'toastr']);
-mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $timeout, geolocation, gservice, AuthService, toastr){
+mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootScope, $timeout, geolocation, gservice, AuthService, toastr){
 
     // Initializes Variables
     // ----------------------------------------------------------------------------
@@ -140,7 +140,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     $scope.sortBy = 1;
 
-
     $scope.$watch( AuthService.isLoggedIn, function ( isLoggedIn ) {
         $scope.isLoggedIn = isLoggedIn;
         $scope.currentUser = AuthService.currentUser();
@@ -159,7 +158,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     var queryBody = {};
     var lastQuery = [];
-    $scope.filterResults = function() {
+    $scope.getResults = function() {
         // console.log($scope.filter);
         queryBody = {
             address: {
@@ -197,12 +196,6 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
         // Store the filtered results in queryResults
             .success(function(queryResults){
 
-                // Query Body and Result Logging
-                // console.log("QueryBody:");
-                // console.log(queryBody);
-                // console.log("QueryResults:");
-                // console.log(queryResults);
-
                 lastQuery = queryResults;
 
                 // gservice.refresh(queryBody.latitude, queryBody.longitude, queryResults);
@@ -218,6 +211,10 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             .error(function(queryResults){
                 console.log('Error ' + queryResults);
             })
+    };
+
+    $scope.cancelFilter = function() {
+        $scope.toggleFilter();
     };
 
     $scope.checkIfEnterKeyWasPressed = function($event){
@@ -341,7 +338,11 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
 
     $scope.toggleCollapse = function(){
         $scope.newHouseCollapse = !$scope.newHouseCollapse;
-        if(!$scope.newHouseCollapse) focus('new-street-input');
+        if(!$scope.newHouseCollapse) {
+            if(!$scope.filterCollapse) $scope.toggleFilter();
+            focus('new-street-input');
+            $window.scrollTo(0, 0);
+        }
     };
 
     $scope.addRating = function(house_id,rating) {
@@ -407,6 +408,7 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     $scope.mapCollapse[$scope.houses[i]._id] = true;
                     $scope.directions[$scope.houses[i]._id] = false;
                 }
+                $scope.loadingHouses = false;
             })
             .error(function(data) {
                toastr.error('We can\'t find the light switch right now. Don\'t worry, we\'ll find it soon!')
@@ -432,16 +434,16 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
             $scope.newHouse.location.push($scope.newHouse.longitude);
             $scope.newHouse.location.push($scope.newHouse.latitude);
 
-                $scope.newHouse.pictures = [];
-                $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
+            $scope.newHouse.pictures = [];
+            $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
 
-                $http.post('/houses', $scope.newHouse)
-                    .success(function(data) {
-                        $scope.upload(uniqueFileName, data, true);
-                    })
-                    .error(function(data) {
-                        toastr.error('Something\'s not quite right. Try again later');
-                    });
+            $http.post('/houses', $scope.newHouse)
+                .success(function(data) {
+                    $scope.upload(uniqueFileName, data, true);
+                })
+                .error(function(data) {
+                    toastr.error('Something\'s not quite right. Try again later');
+                });
 
             // });
 
@@ -503,12 +505,17 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
     };
 
 
+    $scope.cancelNewHouse = function() {
+        $scope.toggleCollapse();
+    };
+
     // Set initial coordinates to the center of the US
     // $scope.myLocation.latitude = 39.500;
     // $scope.myLocation.longitude = -98.350;
 
     // Get User's actual coordinates based on HTML5 at window load
     $scope.setMyLocation = function(getHouses) {
+        if(getHouses) $scope.loadingHouses = true;
         geolocation.getLocation().then(function(data){
 
             // Set the latitude and longitude equal to the HTML5 coordinates
@@ -603,6 +610,10 @@ mainCtrl.controller('mainCtrl', function($scope, $http, focus, $rootScope, $time
                     toastr.error('Something\'s not quite right. Try again later');
                 });
         }
+    };
+
+    $scope.cancelComment = function(house) {
+        house.comment.text = '';
     };
 
     // Functions
