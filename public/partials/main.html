@@ -54,6 +54,10 @@
                     </div>
                 </div>
             </script>
+            <button class="xbtn red-bg" ng-click="locationPopover()" uib-popover-template="myLocationPopover.templateUrl"
+                    popover-title="Set My Location"
+                    popover-placement="bottom-right" popover-is-open="locationIsOpen"
+                    popover-trigger="'outsideClick'">Set My Location</button>
 
             <!--<div class="currentUser" ng-show="isLoggedIn && currentUser">{{currentUser}}</div>-->
             <div class="btn-group" ng-show="isLoggedIn && currentUser" uib-dropdown is-open="status.isopen" keyboard-nav="true">
@@ -61,10 +65,39 @@
                     <i class="fa fa-user"></i> {{currentUser}} <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
-                    <li role="menuitem"><a href ng-click="locationPopover()">Set My Location</a></li>
+                    <li role="menuitem"></li>
                     <li role="menuitem"><a href ng-click="logout()"><i class="fa fa-sign-out"></i> Logout</a></li>
                 </ul>
             </div>
+
+            <script type="text/ng-template" id="location.html">
+                <div class="col-md-12 popover-background">
+                    <div ng-show="error.location" class="alert alert-danger">{{error.location}}</div>
+                    <div class="registration-form">
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input id="location" ng-keypress="checkIfEnterKeyWasPressed($event)" type="text" class="form-control"
+                                   name="location" placeholder="Enter an address"
+                                   vs-google-autocomplete
+
+                                   ng-model="locationForm.myLocation"
+                                   vs-place="locationForm.place"
+                                   vs-street-number="locationForm.streetNumber"
+                                   vs-street="locationForm.streetName"
+                                   vs-city="loactionForm.city"
+                                   vs-state="locationForm.state"
+                                   vs-post-code="locationForm.zip"
+                                   vs-latitude="locationForm.latitude"
+                                   vs-longitude="locationForm.longitude"
+                                   required>
+                        </div>
+                        <div class="popover-buttons">
+                            <button ng-click="setMyLocation(true, locationForm.myLocation)" class="blue-bg xbtn">Set My Location</button>
+                            <button ng-click="cancelLocation()" class="blue-bg xbtn" >Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </script>
             <!--<button class="red-bg xbtn"></button>-->
         </div>
 

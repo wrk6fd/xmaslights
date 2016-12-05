@@ -80,6 +80,11 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
         username: '',
         password: ''
     };
+    $scope.locationIsOpen = false;
+    $scope.locationForm = {
+        myLocation: '',
+        location: {}
+    };
 
     $scope.filterCollapse = true;
     $scope.newHouseCollapse = true;
@@ -98,8 +103,8 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
     $scope.loginPopover = {
         templateUrl: 'login.html'
     };
-    $scope.mapPopover = {
-        templateUrl: 'showMap.html'
+    $scope.myLocationPopover = {
+        templateUrl: 'location.html'
     };
 
     var coords = {};
@@ -153,6 +158,11 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
     $scope.$watch('registerIsOpen', function(value) {
         if(value) {
             focus('register-username');
+        }
+    });
+    $scope.$watch('locationIsOpen', function(value) {
+        if(value) {
+            focus('location');
         }
     });
 
@@ -389,6 +399,7 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
     };
 
     $scope.getAllHouses = function() {
+        console.log($scope.myLocation);
         $scope.getHousesUrl()
             .success(function(data) {
                 // console.log(data);
@@ -514,41 +525,67 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
     // $scope.myLocation.longitude = -98.350;
 
     // Get User's actual coordinates based on HTML5 at window load
-    $scope.setMyLocation = function(getHouses) {
+    $scope.setMyLocation = function(getHouses, customLocation) {
         if(getHouses) $scope.loadingHouses = true;
-        geolocation.getLocation().then(function(data){
 
-            // Set the latitude and longitude equal to the HTML5 coordinates
-            coords = {latitude:data.coords.latitude, longitude:data.coords.longitude};
+        if(customLocation) {
+            $scope.myLocation.longitude = parseFloat(customLocation.longitude).toFixed(6);
+            $scope.myLocation.latitude = parseFloat(customLocation.longitude).toFixed(6);
 
-            // Display coordinates in location textboxes rounded to six decimal points
-            // $scope.myLocation.location = {
-            //     longitude: parseFloat(coords.longitude).toFixed(6),
-            //     latitude: parseFloat(coords.latitude).toFixed(6)
-            // };
-            $scope.myLocation.longitude = parseFloat(coords.longitude).toFixed(6);
-            $scope.myLocation.latitude = parseFloat(coords.latitude).toFixed(6);
+            $scope.myLocation.address = {
+                streetNumber: customLocation.streetNumber,
+                streetName: customLocation.streetName,
+                city: customLocation.city,
+                state: customLocation.state
+            };
 
-            // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
+            $scope.myLocation.name = customLocation.place;
 
-            gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(geoLocation){
-                $scope.myLocation.address = geoLocation.address;
-                $scope.myLocation.name = geoLocation.name;
+            $scope.newHouse.name = $scope.myLocation.name;
+            $scope.newHouse.address = $scope.myLocation.address;
 
-                $scope.newHouse.name = geoLocation.name;
-                $scope.newHouse.address = geoLocation.address;
+            $scope.newHouse.location = [];
+            $scope.newHouse.location.push($scope.myLocation.longitude);
+            $scope.newHouse.location.push($scope.myLocation.latitude);
+            $scope.newHouse.longitude = $scope.myLocation.longitude;
+            $scope.newHouse.latitude = $scope.myLocation.latitude;
 
-                $scope.newHouse.location = [];
-                $scope.newHouse.location.push($scope.myLocation.longitude);
-                $scope.newHouse.location.push($scope.myLocation.latitude);
-                $scope.newHouse.longitude = $scope.myLocation.longitude;
-                $scope.newHouse.latitude = $scope.myLocation.latitude;
+            if(getHouses) $scope.getAllHouses();
+        } else {
+            geolocation.getLocation().then(function(data){
 
-                if(getHouses) $scope.getAllHouses();
+                // Set the latitude and longitude equal to the HTML5 coordinates
+                coords = {latitude:data.coords.latitude, longitude:data.coords.longitude};
+
+                // Display coordinates in location textboxes rounded to six decimal points
+                // $scope.myLocation.location = {
+                //     longitude: parseFloat(coords.longitude).toFixed(6),
+                //     latitude: parseFloat(coords.latitude).toFixed(6)
+                // };
+                $scope.myLocation.longitude = parseFloat(coords.longitude).toFixed(6);
+                $scope.myLocation.latitude = parseFloat(coords.latitude).toFixed(6);
+
+                // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
+
+                gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(geoLocation){
+                    $scope.myLocation.address = geoLocation.address;
+                    $scope.myLocation.name = geoLocation.name;
+
+                    $scope.newHouse.name = geoLocation.name;
+                    $scope.newHouse.address = geoLocation.address;
+
+                    $scope.newHouse.location = [];
+                    $scope.newHouse.location.push($scope.myLocation.longitude);
+                    $scope.newHouse.location.push($scope.myLocation.latitude);
+                    $scope.newHouse.longitude = $scope.myLocation.longitude;
+                    $scope.newHouse.latitude = $scope.myLocation.latitude;
+
+                    if(getHouses) $scope.getAllHouses();
+
+                });
 
             });
-
-        });
+        }
     };
     $scope.setMyLocation(true);
 
