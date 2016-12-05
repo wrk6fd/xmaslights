@@ -1,6 +1,6 @@
 // Creates the mainCtrl Module and Controller. Note that it depends on the 'geolocation' module and service.
 var mainCtrl = angular.module('mainCtrl', ['geolocation', 'gservice', 'AuthService', 'toastr']);
-mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootScope, $timeout, geolocation, gservice, AuthService, toastr){
+mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $rootScope, $timeout, geolocation, gservice, AuthService, toastr){
 
     // Initializes Variables
     // ----------------------------------------------------------------------------
@@ -402,7 +402,7 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
         console.log($scope.myLocation);
         $scope.getHousesUrl()
             .success(function(data) {
-                // console.log(data);
+                console.log(data);
                 $scope.houses = data;
                 for(var i = 0; i < $scope.houses.length; i++) {
                     if(!$scope.houses[i].hasOwnProperty('ratings')) {
@@ -524,38 +524,75 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
     // $scope.myLocation.latitude = 39.500;
     // $scope.myLocation.longitude = -98.350;
 
-    // Get User's actual coordinates based on HTML5 at window load
-    $scope.setMyLocation = function(getHouses, customLocation) {
+    $scope.getCurrentPosition = function() {
+        var deferred = $q.defer();
+
+        if (!$window.navigator.geolocation) {
+            console.log('something is wrong');
+            deferred.reject('Geolocation not supported.');
+        } else {
+            console.log('something is wrong');
+            $window.navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    console.log('something is wrong');
+                    deferred.resolve(position);
+                },
+                function (err) {
+                    console.log('something is wrong');
+                    deferred.reject(err);
+                });
+        }
+
+        return deferred.promise;
+    };
+
+    $scope.captureUserLocation = function() {
+       $scope.getCurrentPosition().then(function(data) {
+           console.log(data);
+           $scope.setMyLocation(true)
+       }, function(err) {
+           console.log(err);
+           $scope.setMyLocation(true,true)
+       });
+    };
+
+        // Get User's actual coordinates based on HTML5 at window load
+    $scope.setMyLocation = function(getHouses, noLocation) {
         if(getHouses) $scope.loadingHouses = true;
 
-        if(customLocation) {
-            $scope.myLocation.longitude = parseFloat(customLocation.longitude).toFixed(6);
-            $scope.myLocation.latitude = parseFloat(customLocation.longitude).toFixed(6);
+        // if(customLocation) {
+        //     console.log(customLocation);
+        //     $scope.myLocation.longitude = parseFloat(customLocation.longitude).toFixed(6);
+        //     $scope.myLocation.latitude = parseFloat(customLocation.longitude).toFixed(6);
+        //
+        //     $scope.myLocation.address = {
+        //         streetNumber: customLocation.streetNumber,
+        //         streetName: customLocation.streetName,
+        //         city: customLocation.city,
+        //         state: customLocation.state
+        //     };
+        //
+        //     $scope.myLocation.name = customLocation.myLocation;
+        //
+        //     // $scope.newHouse.name = $scope.myLocation.name;
+        //     $scope.newHouse.address = $scope.myLocation.address;
+        //
+        //     $scope.newHouse.location = [];
+        //     $scope.newHouse.location.push($scope.myLocation.longitude);
+        //     $scope.newHouse.location.push($scope.myLocation.latitude);
+        //     $scope.newHouse.longitude = $scope.myLocation.longitude;
+        //     $scope.newHouse.latitude = $scope.myLocation.latitude;
+        //
+        //     if(getHouses) $scope.getAllHouses();
+        // } else {
 
-            $scope.myLocation.address = {
-                streetNumber: customLocation.streetNumber,
-                streetName: customLocation.streetName,
-                city: customLocation.city,
-                state: customLocation.state
-            };
-
-            $scope.myLocation.name = customLocation.place;
-
-            $scope.newHouse.name = $scope.myLocation.name;
-            $scope.newHouse.address = $scope.myLocation.address;
-
-            $scope.newHouse.location = [];
-            $scope.newHouse.location.push($scope.myLocation.longitude);
-            $scope.newHouse.location.push($scope.myLocation.latitude);
-            $scope.newHouse.longitude = $scope.myLocation.longitude;
-            $scope.newHouse.latitude = $scope.myLocation.latitude;
-
+        if(noLocation){
             if(getHouses) $scope.getAllHouses();
         } else {
-            geolocation.getLocation().then(function(data){
+            geolocation.getLocation().then(function (data) {
 
                 // Set the latitude and longitude equal to the HTML5 coordinates
-                coords = {latitude:data.coords.latitude, longitude:data.coords.longitude};
+                coords = {latitude: data.coords.latitude, longitude: data.coords.longitude};
 
                 // Display coordinates in location textboxes rounded to six decimal points
                 // $scope.myLocation.location = {
@@ -567,7 +604,7 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
 
                 // gservice.refresh($scope.myLocation.latitude, $scope.myLocation.longitude);
 
-                gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function(geoLocation){
+                gservice.rGeocode($scope.myLocation.latitude, $scope.myLocation.longitude, function (geoLocation) {
                     $scope.myLocation.address = geoLocation.address;
                     $scope.myLocation.name = geoLocation.name;
 
@@ -580,14 +617,15 @@ mainCtrl.controller('mainCtrl', function($scope, $window, $http, focus, $rootSco
                     $scope.newHouse.longitude = $scope.myLocation.longitude;
                     $scope.newHouse.latitude = $scope.myLocation.latitude;
 
-                    if(getHouses) $scope.getAllHouses();
+                    if (getHouses) $scope.getAllHouses();
 
                 });
 
             });
         }
     };
-    $scope.setMyLocation(true);
+    // $scope.setMyLocation(true);
+    $scope.captureUserLocation();
 
     $scope.showMap = function(house, directions) {
         if(!directions) {

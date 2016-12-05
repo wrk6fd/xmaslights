@@ -24,7 +24,8 @@ module.exports = function(app) {
         var query = House.find({});
         // console.log('connecting to mongodb');
 
-        if(req.query) {
+        if(req.query.length) {
+            console.log(req.query);
             latitude = parseFloat(req.query.latitude);
             longitude = parseFloat(req.query.longitude);
 
