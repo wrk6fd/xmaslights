@@ -316,6 +316,7 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
     $scope.toggleFilter = function() {
         $scope.filterCollapse = !$scope.filterCollapse;
         if(!$scope.filterCollapse) {
+            if(!$scope.newHouseCollapse) $scope.toggleCollapse();
             $scope.filter = $scope.myLocation;
             // $scope.filter.distance = 10;
             // $scope.sortBy = 1;
@@ -399,10 +400,10 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
     };
 
     $scope.getAllHouses = function() {
-        console.log($scope.myLocation);
+        // console.log($scope.myLocation);
         $scope.getHousesUrl()
             .success(function(data) {
-                console.log(data);
+                // console.log(data);
                 $scope.houses = data;
                 for(var i = 0; i < $scope.houses.length; i++) {
                     if(!$scope.houses[i].hasOwnProperty('ratings')) {
@@ -528,17 +529,16 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
         var deferred = $q.defer();
 
         if (!$window.navigator.geolocation) {
-            console.log('something is wrong');
+            console.log('Location is unavailable');
             deferred.reject('Geolocation not supported.');
         } else {
-            console.log('something is wrong');
+            // console.log('something is wrong');
             $window.navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    console.log('something is wrong');
                     deferred.resolve(position);
                 },
                 function (err) {
-                    console.log('something is wrong');
+                    console.log('Current Location is unavailable');
                     deferred.reject(err);
                 });
         }
@@ -548,10 +548,8 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
 
     $scope.captureUserLocation = function() {
        $scope.getCurrentPosition().then(function(data) {
-           console.log(data);
            $scope.setMyLocation(true)
        }, function(err) {
-           console.log(err);
            $scope.setMyLocation(true,true)
        });
     };

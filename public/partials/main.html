@@ -179,24 +179,17 @@
 
             </div>
             <div class="filter-buttons col-md-8 col-md-offset-2">
-                <button class="blue-bg xbtn" ng-click="getResults()">Update Results</button>
-                <button class="blue-bg xbtn" ng-click="cancelFilter()">Cancel</button>
+                <button class="red-bg xbtn" ng-click="getResults()">Update Results</button>
+                <button class="red-bg xbtn" ng-click="cancelFilter()">Cancel</button>
             </div>
 
             
         </div>
+
     </div>
-</header>
-
-<div class="container">
-    <div class="loading" ng-show="loadingHouses"><i class="fa fa-tree fa-spin"></i></div>
-    <div class="collapse" uib-collapse="newHouseCollapse" id="newHouse">
-        <div class="box">
-            <div class="box-header">
-
-            </div>
-            <div class="box-body-new">
-                <div class="col-md-6 add-picture">
+    <div class="collapse" uib-collapse="newHouseCollapse" id="newHouseNav">
+            <div class="filter col-md-12">
+                <div class="col-md-offset-3 col-md-3 add-picture left-form">
                     <div class="new-house-upload">
                         <p ng-show="error.file">{{error.file}}</p>
                         <file-field class="blue-bg xbtn" ng-show="!file" ng-model="file" preview="previewImage">Select File</file-field>
@@ -204,7 +197,7 @@
                         <img ng-show="file" ng-src="{{previewImage}}" ng-click="file=null; previewImage=' ';">
                     </div>
                 </div>
-                <div class="col-md-6 new-address-form">
+                <div class="col-md-3 new-address-form right-form">
                     <div class="form-group col-md-12">
                         <label for="new-house-address">Address</label>
                         <input vs-google-autocomplete
@@ -231,13 +224,16 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="box-footer new-house">
-                <button class="red-bg xbtn" ng-click="addHouse()">Add House</button>
-                <button class="red-bg xbtn" ng-click="cancelNewHouse()">Cancel</button>
+                <div class="filter-buttons col-md-8 col-md-offset-2">
+                    <button class="red-bg xbtn" ng-click="addHouse()">Add House</button>
+                    <button class="red-bg xbtn" ng-click="cancelNewHouse()">Cancel</button>
+                </div>
             </div>
         </div>
-    </div>
+</header>
+
+<div class="container">
+    <div class="loading" ng-show="loadingHouses"><i class="fa fa-tree fa-spin"></i> Turning on the lights...</div>
     <div class="box" ng-repeat="house in houses track by $index"><!-- repeat for each house in db-->
         <div class="box-header">
             <div style="margin-top: -5px;" house-rating rating="house.avgRating" read-only="false" max-rating="5" click="addRating(house._id,param)"

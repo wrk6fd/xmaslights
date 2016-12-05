@@ -363,8 +363,8 @@ nav .navigation.selected {
     display: flex;
 }
 
-.box-body-new .new-address-form {
-    padding: 24px 0;
+.new-address-form {
+    padding-top: 100px !important;
 }
 
 .new-house-upload img{
