@@ -147,7 +147,7 @@ body {
 
 .popover-buttons {
     display: flex;
-
+    justify-content: center;
     padding: 12px 0;
 }
 
@@ -200,8 +200,8 @@ header {
     min-height: 100px;
     z-index: 9999;
     background-color: #4AA7A7;
-    background-image: -webkit-linear-gradient(rgba(74, 167, 167, 0.7), rgba(74, 167, 167, 0.7)), url(img/small_christmas_trees.png);
-    background-image: linear-gradient(rgba(74, 167, 167, 0.7), rgba(74, 167, 167, 0.7)), url(img/small_christmas_trees.png);
+    background-image: -webkit-linear-gradient(rgba(74, 167, 167, 0.85), rgba(74, 167, 167, 0.85)), url(img/small_christmas_trees.png);
+    background-image: linear-gradient(rgba(74, 167, 167, 0.85), rgba(74, 167, 167, 0.85)), url(img/small_christmas_trees.png);
 }
 
 .headroom {
@@ -248,9 +248,21 @@ nav {
     flex-grow: 1 ;
 }
 
-nav button {
+nav .navigation {
     padding-right: 24px !important;
     padding-left: 24px !important;
+    background: transparent;
+    border: none;
+    color: #f5f5d8;
+    font-size: 20px;
+    line-height: 100px;
+    height: 100px;
+    transition: all 350ms;
+}
+
+nav .navigation:active,
+nav .navigation.selected {
+    background-color: rgba(42, 87, 87, 0.7);
 }
 
 .left-buttons {
