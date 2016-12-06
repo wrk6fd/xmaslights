@@ -525,7 +525,10 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
                     if(newHouse) {
                         // Upload Successfully Finished
                         // toastr.success('File Uploaded Successfully', 'Done');
-                        $scope.houses.push(house);
+                        // $scope.houses.push(house);
+
+                        $scope.houses = _.concat([house],$scope.houses);
+
                         $scope.commentCollapse[house._id] = true;
                         $scope.mapCollapse[house._id] = true;
                         $scope.ratingMsg[house._id] = 'Average Rating: ' + (house.avgRating || 0) + ' Snowflakes';
