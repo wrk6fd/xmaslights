@@ -337,7 +337,7 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
             // $scope.filter.distance = 10;
             // $scope.sortBy = 1;
             setTimeout(function() {
-                focus('filter-address');
+                focus('filterAddress');
             }, 1000);
             $scope.filterError = '';
         } else if($scope.filterCollapse) {
@@ -369,7 +369,7 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
         if(!$scope.newHouseCollapse) {
             if(!$scope.filterCollapse) $scope.toggleFilter();
             setTimeout(function() {
-                focus('new-street-input');
+                focus('newHouseAddress');
             }, 1000);
             $scope.houseError = '';
             $window.scrollTo(0, 0);
@@ -528,6 +528,7 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
                         $scope.houses.push(house);
                         $scope.commentCollapse[house._id] = true;
                         $scope.mapCollapse[house._id] = true;
+                        $scope.ratingMsg[house._id] = 'Average Rating: ' + (house.avgRating || 0) + ' Snowflakes';
                         $scope.newHouseCollapse = true;
                         $scope.newHouse = $scope.myLocation;
                         toastr.success('New house added!');
