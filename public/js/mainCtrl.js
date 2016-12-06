@@ -339,6 +339,7 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
             setTimeout(function() {
                 focus('filter-address');
             }, 1000);
+            $scope.filterError = '';
         } else if($scope.filterCollapse) {
             $scope.filter = {
                 name: '',
@@ -367,7 +368,10 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
         $scope.newHouseCollapse = !$scope.newHouseCollapse;
         if(!$scope.newHouseCollapse) {
             if(!$scope.filterCollapse) $scope.toggleFilter();
-            focus('new-street-input');
+            setTimeout(function() {
+                focus('new-street-input');
+            }, 1000);
+            $scope.houseError = '';
             $window.scrollTo(0, 0);
         }
     };
