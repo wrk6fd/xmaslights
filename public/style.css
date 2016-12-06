@@ -322,6 +322,14 @@ nav .navigation.selected {
     margin-top: 12px;
 }
 
+.address-error {
+    color: rgb(168, 0, 48);
+    font-style: italic;
+    background-color: #ddc2c6;
+    border-radius: 3px;
+    padding: 2px;
+    text-align: center;
+}
 
 
 /**************HEADER**************/

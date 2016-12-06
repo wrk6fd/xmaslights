@@ -103,91 +103,98 @@
 
     </nav>
     <div class="nav-collapse" uib-collapse="filterCollapse" id="filter">
-        <div class="filter col-md-12">
-            <div class="col-md-offset-3 col-md-2 left-form">
-                <div class="form-group col-md-12">
-                    <label class="filter-label rating-label"><i class="light-blue fa fa-snowflake-o"></i> Rating</label>
-                    <ul class="filter-rating">
-                        <li>
-                            <label>
-                                <input ng-model="filter.snow5" ng-true-value="5" ng-false-value="" type="checkbox">5 Snowflakes
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input ng-model="filter.snow4" ng-true-value="4" ng-false-value="" type="checkbox">4 Snowflakes
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input ng-model="filter.snow3" ng-true-value="3" ng-false-value="" type="checkbox">3 Snowflakes
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input ng-model="filter.snow2" ng-true-value="2" ng-false-value="" type="checkbox">2 Snowflakes
-                            </label>
-                        </li>
-                        <li>
-                            <label>
-                                <input ng-model="filter.snow1" ng-true-value="1" ng-false-value="" type="checkbox">1 Snowflake
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-4 right-form">
-                <div class="form-group col-md-12">
-                    <label class="filter-label" for="filter-address">Address</label>
-                    <input vs-google-autocomplete
-
-                           ng-model="filter.name"
-                           vs-street-number="filter.streetNumber"
-                           vs-street="filter.streetName"
-                           vs-city="filter.city"
-                           vs-state="filter.state"
-                           vs-post-code="filter.zip"
-                           vs-latitude="filter.location.latitude"
-                           vs-longitude="filter.location.longitude"
-
-                           type="text"
-                           name="address"
-                           id="filter-address"
-                           class="form-control"
-                           placeholder=" ">
-                </div>
-                <!--<div>{{filter.name}}</div>-->
-                <div class="form-group col-md-12">
-                    <label class="filter-label" for="filter-distance">Distance (miles)</label>
-                    <input class="form-control" type="number" id="filter-distance" ng-model="filter.distance">
-                </div>
-
-                <div class="form-group col-md-9">
-                    <label class="filter-label">Sort By: </label>
-                    <div class="btn-group">
-                        <label>
-                            <input type="radio" ng-model="sortBy" ng-value="1"> Distance (Near to Far)
-                        </label>
-                        <label>
-                            <input type="radio" ng-model="sortBy" ng-value="2"> Ratings (High to Low)
-                        </label>
-                        <label>
-                            <input type="radio" ng-model="sortBy" ng-value="3"> Ratings (Low to High)
-                        </label>
+        <form name="filterForm">
+            <div class="filter col-md-12">
+                <div class="col-md-offset-3 col-md-2 left-form">
+                    <div class="form-group col-md-12">
+                        <label class="filter-label rating-label"><i class="light-blue fa fa-snowflake-o"></i> Rating</label>
+                        <ul class="filter-rating">
+                            <li>
+                                <label>
+                                    <input ng-model="filter.snow5" ng-true-value="5" ng-false-value="" type="checkbox">5 Snowflakes
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input ng-model="filter.snow4" ng-true-value="4" ng-false-value="" type="checkbox">4 Snowflakes
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input ng-model="filter.snow3" ng-true-value="3" ng-false-value="" type="checkbox">3 Snowflakes
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input ng-model="filter.snow2" ng-true-value="2" ng-false-value="" type="checkbox">2 Snowflakes
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input ng-model="filter.snow1" ng-true-value="1" ng-false-value="" type="checkbox">1 Snowflake
+                                </label>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+                <div class="col-md-4 right-form">
+                    <div class="form-group col-md-12">
+                        <label class="filter-label" for="filterAddress">Address</label>
+                        <p ng-show="filterError" class="address-error">{{filterError}}</p>
+                        <input vs-google-autocomplete
+                               vs-autocomplete-validator
 
+                               ng-model="filter.name"
+                               vs-street-number="filter.streetNumber"
+                               vs-street="filter.streetName"
+                               vs-city="filter.city"
+                               vs-state="filter.state"
+                               vs-post-code="filter.zip"
+                               vs-latitude="filter.location.latitude"
+                               vs-longitude="filter.location.longitude"
+
+                               type="text"
+                               name="filterAddress"
+                               id="filterAddress"
+                               class="form-control"
+                               placeholder=" ">
+                    </div>
+                    <!--<div>{{filter.name}}</div>-->
+                    <div class="form-group col-md-12">
+                        <label class="filter-label" for="filter-distance">Distance (miles)</label>
+                        <input class="form-control" type="number" id="filter-distance" ng-model="filter.distance">
+                    </div>
+
+                    <div class="form-group col-md-9">
+                        <label class="filter-label">Sort By: </label>
+                        <div class="btn-group">
+                            <label>
+                                <input type="radio" ng-model="sortBy" ng-value="1"> Distance (Near to Far)
+                            </label>
+                            <label>
+                                <input type="radio" ng-model="sortBy" ng-value="2"> Ratings (High to Low)
+                            </label>
+                            <label>
+                                <input type="radio" ng-model="sortBy" ng-value="3"> Ratings (Low to High)
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="filter-buttons col-md-8 col-md-offset-2">
+                    <button class="red-bg xbtn" ng-click="getResults()">Update Results</button>
+                    <button class="red-bg xbtn" ng-click="cancelFilter()">Cancel</button>
+                </div>
             </div>
-            <div class="filter-buttons col-md-8 col-md-offset-2">
-                <button class="red-bg xbtn" ng-click="getResults()">Update Results</button>
-                <button class="red-bg xbtn" ng-click="cancelFilter()">Cancel</button>
-            </div>
+        </form>
+
 
             
-        </div>
+
 
     </div>
     <div class="collapse" uib-collapse="newHouseCollapse" id="newHouseNav">
+        <form name="newHouseForm">
             <div class="filter col-md-12">
                 <div class="col-md-offset-3 col-md-3 add-picture left-form">
                     <div class="new-house-upload">
@@ -199,8 +206,10 @@
                 </div>
                 <div class="col-md-3 new-address-form right-form">
                     <div class="form-group col-md-12">
-                        <label for="new-house-address">Address</label>
+                        <label for="newHouseAddress">Address</label>
+                        <p ng-show="houseError" class="address-error">{{houseError}}</p>
                         <input vs-google-autocomplete
+                               vs-autocomplete-validator
 
                                ng-model="newHouse.name"
                                vs-street-number="newHouse.address.streetNumber"
@@ -212,8 +221,8 @@
                                vs-longitude="newHouse.longitude"
 
                                type="text"
-                               name="address"
-                               id="new-house-address"
+                               name="newHouseAddress"
+                               id="newHouseAddress"
                                class="form-control"
                                placeholder=" ">
                     </div>
@@ -229,7 +238,8 @@
                     <button class="red-bg xbtn" ng-click="cancelNewHouse()">Cancel</button>
                 </div>
             </div>
-        </div>
+        </form>
+    </div>
 </header>
 
 <div class="container">

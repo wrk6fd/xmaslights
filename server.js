@@ -2,7 +2,8 @@
 // -----------------------------------------------------
 var express         = require('express');
 var mongoose        = require('mongoose');
-var port            = process.env.PORT || 3000;
+// var port            = process.env.PORT || 3000;
+var port            = 443;
 var morgan          = require('morgan');
 var bodyParser      = require('body-parser');
 var cookieParser    = require('cookie-parser');
@@ -15,6 +16,7 @@ var localStrategy = require('passport-local' ).Strategy;
 // -----------------------------------------------------
 // Sets the connection to MongoDB
 mongoose.connect("mongodb://admin:password@ds041586.mlab.com:41586/karras-app");
+mongoose.set('debug', true);
 // mongoose.connect("mongodb://localhost/karras-app");
 
 var User = require('./app/user.js');

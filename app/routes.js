@@ -196,8 +196,9 @@ module.exports = function(app) {
         // Opens a generic Mongoose Query. Depending on the post body we will...
         var query = House.find({});
 
-        // ...include filter by Max Distance (converting miles to meters)
+        console.log(distance,location);
         if(distance && location){
+            // ...include filter by Max Distance (converting miles to meters)
 
             var latitude = location.latitude;
             var longitude = location.longitude;
@@ -241,7 +242,8 @@ module.exports = function(app) {
                 console.log(err);
                 res.send(err);
             }
-            console.log(houses);
+            // console.log(houses);
+            // console.log(sortBy);
 
             var retHouses = houses;
             if(sortBy === 2) {

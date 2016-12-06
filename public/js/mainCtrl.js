@@ -96,6 +96,8 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
     $scope.myLocation = {};
     $scope.newHouse = {};
 
+    $scope.filterError = '';
+
     $scope.registrationPopover = {
         templateUrl: 'registration.html'
     };
@@ -169,62 +171,76 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
     var queryBody = {};
     var lastQuery = [];
     $scope.getResults = function() {
-        // console.log($scope.filter);
-        queryBody = {
-            address: {
-                streetNumber: $scope.filter.streetNumber,
-                streetName: $scope.filter.streetName,
-                city: $scope.filter.city,
-                state: $scope.filter.state,
-                zip: $scope.filter.zip
-            },
-            location: $scope.filter.location, // latitude, longitude
-            distance: $scope.filter.distance,
-            rating5: $scope.filter.snow5,
-            rating4: $scope.filter.snow4,
-            rating3: $scope.filter.snow3,
-            rating2: $scope.filter.snow2,
-            rating1: $scope.filter.snow1,
-            sortBy: $scope.sortBy
-        };
+        if($scope.filterForm.filterAddress.$invalid) {
+            toastr.error('Make sure you enter a valid address');
+            $scope.filterError = 'Make sure you enter a valid address';
+        } else {
+            $scope.filterError = '';
+            queryBody = {
+                address: {
+                    streetNumber: $scope.filter.streetNumber,
+                    streetName: $scope.filter.streetName,
+                    city: $scope.filter.city,
+                    state: $scope.filter.state,
+                    zip: $scope.filter.zip
+                },
+                // location: $scope.filter.location, // latitude, longitude
+                location: {
+                    latitude: $scope.filter.latitude,
+                    longitude: $scope.filter.longitude
+                },
+                distance: $scope.filter.distance,
+                rating5: $scope.filter.snow5,
+                rating4: $scope.filter.snow4,
+                rating3: $scope.filter.snow3,
+                rating2: $scope.filter.snow2,
+                rating1: $scope.filter.snow1,
+                sortBy: $scope.sortBy
+            };
 
-        if(!queryBody.distance) {
-            queryBody.distance = 50;
+
+            if(!queryBody.distance) {
+                queryBody.distance = 50;
+            }
+
+            if(queryBody.sortBy === 1 && !queryBody.location) {
+                // queryBody.location = $scope.myLocation.location;
+                queryBody.location = {};
+                queryBody.location.longitude = $scope.myLocation.longitude;
+                queryBody.location.latitude = $scope.myLocation.latitude;
+
+            }
+
+            // Post the queryBody to the /query POST route to retrieve the filtered results
+            $http.post('/query', queryBody)
+
+            // Store the filtered results in queryResults
+                .success(function(queryResults){
+
+                    lastQuery = queryResults;
+
+                    // gservice.refresh(queryBody.latitude, queryBody.longitude, queryResults);
+
+                    // Count the number of records retrieved for the panel-footer
+                    $scope.queryCount = queryResults.length;
+
+                    $scope.houses = [];
+                    $scope.houses = queryResults;
+                    // toastr.info('Houses updated!');
+                    $scope.toggleFilter();
+                })
+                .error(function(queryResults){
+                    console.log('Error ' + queryResults);
+                });
         }
-
-        if(queryBody.sortBy === 1 && !queryBody.location) {
-            // queryBody.location = $scope.myLocation.location;
-            queryBody.location = {};
-            queryBody.location.longitude = $scope.myLocation.longitude;
-            queryBody.location.latitude = $scope.myLocation.latitude;
-
-        }
-
-        // Post the queryBody to the /query POST route to retrieve the filtered results
-        $http.post('/query', queryBody)
-
-        // Store the filtered results in queryResults
-            .success(function(queryResults){
-
-                lastQuery = queryResults;
-
-                // gservice.refresh(queryBody.latitude, queryBody.longitude, queryResults);
-
-                // Count the number of records retrieved for the panel-footer
-                $scope.queryCount = queryResults.length;
-
-                $scope.houses = [];
-                $scope.houses = queryResults;
-                // toastr.info('Houses updated!');
-                $scope.toggleFilter();
-            })
-            .error(function(queryResults){
-                console.log('Error ' + queryResults);
-            })
     };
 
     $scope.cancelFilter = function() {
         $scope.toggleFilter();
+    };
+
+    $scope.clearFilter = function() {
+        $scope.filter = {};
     };
 
     $scope.checkIfEnterKeyWasPressed = function($event){
@@ -428,41 +444,47 @@ mainCtrl.controller('mainCtrl', function($scope, $q, $window, $http, focus, $roo
     };
 
     $scope.addHouse = function() {
-        if($scope.file) {
-            console.log('starting to add house');
-            var uniqueFileName = $scope.uniqueString() + '-' + $scope.file.name;
-            if(!$scope.newHouse.ratings) {
-                $scope.newHouse.ratings = [];
-                $scope.newHouse.ratings.push($scope.newHouseRating);
-            }
-            $scope.newHouse.avgRating = $scope.newHouseRating;
-            // $scope.newHouse.location = [];
-            // var addrStr = $scope.newHouse.address.street + ', ' + $scope.newHouse.address.city + ', ' + $scope.newHouse.address.state + ' ' + $scope.newHouse.address.zip;
-            // gservice.fGeocode(addrStr, function(lngLat) {
-            //     $scope.newHouse.location =  lngLat;
-
-            // $scope.newHouse.address.street = ($scope.newHouse.address.streetNumber ? $scope.newHouse.address.streetNumber + ' ' + $scope.newHouse.address.streetName : $scope.filter.streetName),
-            $scope.newHouse.location = [];
-            $scope.newHouse.location.push($scope.newHouse.longitude);
-            $scope.newHouse.location.push($scope.newHouse.latitude);
-
-            $scope.newHouse.pictures = [];
-            $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
-
-            $http.post('/houses', $scope.newHouse)
-                .success(function(data) {
-                    $scope.upload(uniqueFileName, data, true);
-                })
-                .error(function(data) {
-                    toastr.error('Something\'s not quite right. Try again later');
-                });
-
-            // });
-
-
+        if($scope.newHouseForm.newHouseAddress.$invalid) {
+            toastr.error('Make sure you enter a valid address');
+            $scope.houseError = 'Make sure you enter a valid address';
         } else {
-            $scope.error.file = 'Don\'t forget to upload a picture to share';
-            toastr.error($scope.error.file);
+            $scope.houseError = '';
+            if ($scope.file) {
+                console.log('starting to add house');
+                var uniqueFileName = $scope.uniqueString() + '-' + $scope.file.name;
+                if (!$scope.newHouse.ratings) {
+                    $scope.newHouse.ratings = [];
+                    $scope.newHouse.ratings.push($scope.newHouseRating);
+                }
+                $scope.newHouse.avgRating = $scope.newHouseRating;
+                // $scope.newHouse.location = [];
+                // var addrStr = $scope.newHouse.address.street + ', ' + $scope.newHouse.address.city + ', ' + $scope.newHouse.address.state + ' ' + $scope.newHouse.address.zip;
+                // gservice.fGeocode(addrStr, function(lngLat) {
+                //     $scope.newHouse.location =  lngLat;
+
+                // $scope.newHouse.address.street = ($scope.newHouse.address.streetNumber ? $scope.newHouse.address.streetNumber + ' ' + $scope.newHouse.address.streetName : $scope.filter.streetName),
+                $scope.newHouse.location = [];
+                $scope.newHouse.location.push($scope.newHouse.longitude);
+                $scope.newHouse.location.push($scope.newHouse.latitude);
+
+                $scope.newHouse.pictures = [];
+                $scope.newHouse.pictures.push('https://s3.amazonaws.com/house-picture-uploads/' + uniqueFileName);
+
+                $http.post('/houses', $scope.newHouse)
+                    .success(function (data) {
+                        $scope.upload(uniqueFileName, data, true);
+                    })
+                    .error(function (data) {
+                        toastr.error('Something\'s not quite right. Try again later');
+                    });
+
+                // });
+
+
+            } else {
+                $scope.error.file = 'Don\'t forget to upload a picture to share';
+                toastr.error($scope.error.file);
+            }
         }
     };
 
